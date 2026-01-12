@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768224486884,
+  "lastUpdate": 1768224584322,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -421959,6 +421959,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 780016,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "421e6622f250f99da5b57660572e921c91cbfcf4",
+          "message": "mldsa_native.h: Remove MLD_MAX_TOTAL_ALLOC constants\n\nRemove MLD_MAX_TOTAL_ALLOC and MLD_MAX_TOTAL_ALLOC_{KEYPAIR,SIGN,VERIFY}\nconstants. These exposed the maximum allocation across all security\nlevels even in single-level builds, which was confusing. Users should\ninstead use the explicitly security-level-labeled constants such as\nMLD_TOTAL_ALLOC_87_KEYPAIR.\n\nThe per-level MLD_TOTAL_ALLOC_{44,65,87}_{KEYPAIR,SIGN,VERIFY} and\naggregate MLD_TOTAL_ALLOC_{44,65,87} constants remain available.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-01-12T21:23:12+08:00",
+          "tree_id": "ecc4ec5d25fd0a639615c7cb76b706a41d27b4f6",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/421e6622f250f99da5b57660572e921c91cbfcf4"
+        },
+        "date": 1768224382869,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 275441,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 812752,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 272742,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 473825,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1346242,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 451609,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 804357,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1809021,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 773805,
             "unit": "cycles"
           }
         ]

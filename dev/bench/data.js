@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768199419220,
+  "lastUpdate": 1768199428400,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -280109,6 +280109,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 347368,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "68490efc3389e21f172e46c3d12f328505b8f0f9",
+          "message": "Verify memory usage: Re-use t1/w1 buffer\n\nThis commit is the first of a series of commits reducing the stack usage of\nverification.\nIt is hoisted out from https://github.com/pq-code-package/mldsa-native/pull/751\n\nThis commit places the t1 and w1 buffers into a union saving K KiB of memory.\nOperations using it are slightly reordered such that their lifetime does not\noverlap.\nAs CBMC struggles with unions (issue 8813), we use the same workaround\npresent in signing: Use a struct by default, and a union when\nMLD_CONFIG_REDUCE_RAM is set.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-01-12T14:26:30+08:00",
+          "tree_id": "45eaaa2c19b02d982fab277f1bd55d7176074155",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/68490efc3389e21f172e46c3d12f328505b8f0f9"
+        },
+        "date": 1768199427428,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 120860,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 450259,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 131526,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 205463,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 732087,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 210342,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 339746,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 931710,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 348842,
             "unit": "cycles"
           }
         ]

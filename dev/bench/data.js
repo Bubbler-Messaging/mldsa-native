@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768191868422,
+  "lastUpdate": 1768191891194,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -102383,6 +102383,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 328322,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "andreas.hatziiliou@savoirfairelinux.com",
+            "name": "Andreas Hatziiliou",
+            "username": "L-series"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "f22bae3decc957fcb89d38117fcc78a5a527ba7d",
+          "message": "autogen: fix print for narrow terminals\n\nThis commit replaces the hardcoded width of 160 in `clear_status_line`\nwith the width of ones terminal window. This resolves the issue in which\nwe see autogen generate large amounts of new lines for narrow terminals\n(width <160). In case we are running on a system with a non-interactive\nshell (e.g. some of the CI runners) we fall back to the default.\n\nSigned-off-by: Andreas Hatziiliou <andreas.hatziiliou@savoirfairelinux.com>",
+          "timestamp": "2026-01-12T04:23:19Z",
+          "tree_id": "44f06b75c247dac6d68bfec6327055c12f92d5fe",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/f22bae3decc957fcb89d38117fcc78a5a527ba7d"
+        },
+        "date": 1768191889638,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 114364,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 418649,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 122371,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 195798,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 683876,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 197587,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 323082,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 865971,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 328329,
             "unit": "cycles"
           }
         ]

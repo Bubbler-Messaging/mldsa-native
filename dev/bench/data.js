@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768208617774,
+  "lastUpdate": 1768208668648,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -41393,6 +41393,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 895123,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "liam.louis.fisher@gmail.com",
+            "name": "Liam Fisher",
+            "username": "f15hr"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "e4509c9c02a4f630851d37370562e8479d84cc60",
+          "message": "HOL-Light: Allow cross-generation of byte code\n\n- Ported from https://github.com/pq-code-package/mlkem-native/pull/1444\n\nSigned-off-by: Liam Fisher <liam.louis.fisher@gmail.com>",
+          "timestamp": "2026-01-12T16:55:57+08:00",
+          "tree_id": "e0290fefd4f1502b3947e00a63b349bafcd4d445",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/e4509c9c02a4f630851d37370562e8479d84cc60"
+        },
+        "date": 1768208663748,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 309173,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 1191105,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 337428,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 571253,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 2002980,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 551844,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 892861,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 2533369,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 914870,
             "unit": "cycles"
           }
         ]

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768236609320,
+  "lastUpdate": 1768236612301,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -165098,6 +165098,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 193612,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "cdb6aa21d757ec1f487f1510f3e8b385e99d9657",
+          "message": "Port: use consistent architecture identifier\n\nThis commit ports the change from\nhttps://github.com/pq-code-package/mlkem-native/pull/1456\nto mldsa-native.\n\nCurrently, mldsa-native already uses x86_64 as the architecture\nidentifier for x86 in its existing HOL-Light proofs, and no changes are\nrequired in that regard. This commit simply aligns the surrounding\nscripts and infrastructure to consistently use x86_64 as the\narchitecture name.\n\n- Adds the related scripts to support dual architectures by introducing\n  an explicit arch parameter in the autogen process.\n\n- Replaces the arm_or_x86 flag with a unified arch flag in test scripts.\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-01-12T16:46:46Z",
+          "tree_id": "1b025e867776ef22eae32c7e67dc889f0ddf6c4f",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/cdb6aa21d757ec1f487f1510f3e8b385e99d9657"
+        },
+        "date": 1768236572266,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 69131,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 188645,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 69080,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 119593,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 303553,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 115105,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 203734,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 397568,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 193367,
             "unit": "cycles"
           }
         ]

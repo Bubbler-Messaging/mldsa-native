@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768277459739,
+  "lastUpdate": 1768277478367,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -244854,6 +244854,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 271295,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "e6ba372b9de2bbd9ce89160661c932e0f538650f",
+          "message": "Remove extra reduction from keygen and signing\n\nThe post-condition of `mld_polyvec_matrix_pointwise_montgomery` guarantees\ncoefficients to be of absolute value less than q which lines up with the\npre-condition of `mld_polyveck_invntt_tomont`.\n\nThis commit removes an extra reduction between\n`polyvec_matrix_pointwise_montgomery` and `mld_polyveck_invntt_tomont` in two\nplaces: Once in key generation and once in signing.\n\n- Resolves https://github.com/pq-code-package/mldsa-native/issues/853\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-01-13T04:08:14Z",
+          "tree_id": "23915193cdd8d0d78654b0c8dc9a21ebc09a1e70",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/e6ba372b9de2bbd9ce89160661c932e0f538650f"
+        },
+        "date": 1768277478127,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 93982,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 333879,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 99839,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 159754,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 545813,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 160773,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 267632,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 707044,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 270907,
             "unit": "cycles"
           }
         ]

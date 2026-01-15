@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768485457403,
+  "lastUpdate": 1768485460462,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -148747,6 +148747,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 153128,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "5b933e5c3b87c3c8028ba37d0584ff7c59ee947f",
+          "message": "sys.h: Fix `__attribute__` usage for non-GCC compilers\n\nRestructure `MLD_INLINE` and `MLD_ALWAYS_INLINE` into separate blocks,\neach independently guarded:\n\n`MLD_INLINE`:\n- MSVC: `__inline`\n- C99 or `inline` macro defined: `inline`\n- GCC/Clang C90: `__attribute__((unused))` to silence warnings\n- Other C90: empty\n\n`MLD_ALWAYS_INLINE`:\n- MSVC: `__forceinline`\n- GCC/Clang C99+: `MLD_INLINE __attribute__((always_inline))`\n- Other: `MLD_INLINE` (no forced inlining)\n\nThis fixes two issues:\n1. If `inline` was defined as a macro before including sys.h, the MSVC\n   check was bypassed and `__attribute__` was used, causing MSVC failures.\n2. For non-MSVC/GCC/Clang compilers like IAR, `__attribute__` was used\n   unconditionally, causing build failures.\n\nAlso fix typo: `defined(clang)` -> `defined(__clang__)`\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-01-15T13:54:15Z",
+          "tree_id": "67332e359534dd60fe23f011f0fdcfa5efba6a9c",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/5b933e5c3b87c3c8028ba37d0584ff7c59ee947f"
+        },
+        "date": 1768485399106,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 56284,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 181560,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 61163,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 99141,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 298703,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 100520,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 152630,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 355293,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 152862,
             "unit": "cycles"
           }
         ]

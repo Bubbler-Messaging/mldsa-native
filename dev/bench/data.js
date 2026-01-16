@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768561704058,
+  "lastUpdate": 1768561849387,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -42773,6 +42773,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 872520,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "b61e84f0c73d4ed612ffcaea4282a9d682de3f46",
+          "message": "Examples: Fix feature detection via auto.mk\n\nThe examples are using auto.mk to detect features such as AVX2.\nHowever, auto.mk depends on variables defined in compiler.mk which\nwas not included previously disabling the entire feature detection\nand causing the native examples running without the native code.\nThis caused problems like\nhttps://github.com/pq-code-package/mldsa-native/pull/889\nto go unnoticed.\n\nThis commit inlines compiler.mk into auto.mk, which resolves the issue.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-01-16T11:01:06Z",
+          "tree_id": "7c31bbdf71e55cb48a34817ad4d2b149e05679e4",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/b61e84f0c73d4ed612ffcaea4282a9d682de3f46"
+        },
+        "date": 1768561845098,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 313969,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 1223418,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 347384,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 586618,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1996443,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 561688,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 913508,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 2539507,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 916156,
             "unit": "cycles"
           }
         ]

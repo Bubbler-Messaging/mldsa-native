@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768722679367,
+  "lastUpdate": 1768722690761,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -415820,6 +415820,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 618895,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "andreas.hatziiliou@savoirfairelinux.com",
+            "name": "Andreas Hatziiliou",
+            "username": "L-series"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "263291505296d960e98c5e83901cc42affafe0df",
+          "message": "tests: do not generate custom build for rng test\n\nAs a follow up to e15b34f, we modify the rng failure test so that it\ndoes not generate a new build. To achieve this we do the following:\n\n* Modify components and rules to not generate a custom build.\n* Remove the custom test_rng_fail config.\n* Updated test function names to use standard crypto_sign_* API\n  instead of mld_* aliases as the mld_* namespace is no longer available\n  as we are now using the default build with\n  MLD_DEFAULT_NAMESPACE_PREFIX. Those functions which are not exposed\n  in this way by default are wrapped with MLD_API_NAMESPACE.\n\nSigned-off-by: Andreas Hatziiliou <andreas.hatziiliou@savoirfairelinux.com>\nSigned-off-by: Hanno Becker <beckphan@amazon.co.uk>",
+          "timestamp": "2026-01-18T07:46:32Z",
+          "tree_id": "3a461f78c96a7b9dda2e9c0a25b6351ab0233e73",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/263291505296d960e98c5e83901cc42affafe0df"
+        },
+        "date": 1768722689998,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 213042,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 761141,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 229412,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 381036,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1254147,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 372033,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 604483,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1595183,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 618781,
             "unit": "cycles"
           }
         ]

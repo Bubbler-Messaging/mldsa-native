@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768802454717,
+  "lastUpdate": 1768802466087,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -171584,6 +171584,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 195634,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "8933db908b75d2c19707df24ada290a4f8a0f77b",
+          "message": "Fix macro typo: MLK_UNION_OR_STRUCT => MLD_UNION_OR_STRUCT\n\n- This commit fixes a error cause by macro typo in .clang-format\n  where MLK_UNION_OR_STRUCT should be MLD_UNION_OR_STRUCT. This typo was\n  detected after extending the macro checker to catch wrongly ported\n  MLK_XXX/MLKEM_XXX macros.\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-01-19T13:57:45+08:00",
+          "tree_id": "567e6926a121feb752164ce46c47ed97adc0ffce",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/8933db908b75d2c19707df24ada290a4f8a0f77b"
+        },
+        "date": 1768802417579,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 68940,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 187846,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 69282,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 119446,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 301247,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 115447,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 202992,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 393314,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 195680,
             "unit": "cycles"
           }
         ]

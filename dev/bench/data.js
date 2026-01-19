@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768785437165,
+  "lastUpdate": 1768785445423,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -86584,6 +86584,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 2409034,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "c9df30edfa1a5b2871dbb8eac022ddf6bedd9f6c",
+          "message": "CI/CBMC: Report CBMC runtime\n\nThis commit adds to the CBMC CI action another step which, for PRs,\n- emits one comment per security level showing the CBMC runtimes\n  and the relative slowdown/speedup compares to the last run on `main`\n- warns about severe proof regressions (>50% for now) and failures.\n\nComments are updated when the CI is run multiple times on the same PR.\n\nSigned-off-by: Hanno Becker <beckphan@amazon.co.uk>",
+          "timestamp": "2026-01-19T09:12:42+08:00",
+          "tree_id": "5816f0c4a04e4baae69e1520973f5d82b85b3bd3",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/c9df30edfa1a5b2871dbb8eac022ddf6bedd9f6c"
+        },
+        "date": 1768785341198,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 828095,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 3233854,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 919696,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 1411033,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 5344458,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 1480379,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 2312172,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 6663279,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 2408956,
             "unit": "cycles"
           }
         ]

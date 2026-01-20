@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768896053410,
+  "lastUpdate": 1768896079230,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -422720,6 +422720,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 621367,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "c7e8c87703c3e315088f1d7a0f353f75bb2b8af0",
+          "message": "Fix rng_fail test missing EXTRA_SOURCES on baremetal platforms\n\nThe test_rng_fail binaries were not linking against EXTRA_SOURCES\nbecause RNG_FAIL_TESTS was not included in ALL_TESTS. This caused\nfailures on baremetal platforms that require platform-specific\nsource files defined in EXTRA_SOURCES.\n\nAdd RNG_FAIL_TESTS to ALL_TESTS so the existing dependency rules\nautomatically include EXTRA_SOURCES for rng_fail test binaries.\nSkip inclusion of notrandombytes.c since rng_fail uses a custom\nrng wrapper and `#include`s notrandombytes.c directly.\n\nFinally, run `rng_fail` in the baremetal CI.\n\nFixes #899\n\nSigned-off-by: Hanno Becker <beckphan@amazon.co.uk>",
+          "timestamp": "2026-01-20T15:56:07+08:00",
+          "tree_id": "5a1b40317de02a2ccae1a6d840e436fc097689a3",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/c7e8c87703c3e315088f1d7a0f353f75bb2b8af0"
+        },
+        "date": 1768896078468,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 212892,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 760766,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 229228,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 381181,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1254342,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 372140,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 604825,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1595751,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 618982,
             "unit": "cycles"
           }
         ]

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768901808751,
+  "lastUpdate": 1768901830112,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -404368,6 +404368,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 320482,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "a949f77252670bfc53c7ef40c0a8210eab8be730",
+          "message": "Namespace macros in KeccakP_1600_times4_SIMD256.c with the MLD_ prefix.\n\n- This commit adds the MLD_ namespace prefix to all macros in\n  KeccakP_1600_times4_SIMD256.c.\n\n- This commit also adds the mld_ prefix to the following static symbols\n  in KeccakP_1600_times4_SIMD256.c, similar with:\n  https://github.com/pq-code-package/mlkem-native/pull/1407\n\n  - keccakf1600RoundConstants\n  - rho8\n  - rho56\n\n- Without these changes, building mlkem-native together with\n  mldsa-native that defines the same symbols in a\n  single compilation unit can lead to symbol clashes.\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-01-20T17:32:32+08:00",
+          "tree_id": "19ad952e4d2928c836e3602bdbd6a6c17b39708a",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/a949f77252670bfc53c7ef40c0a8210eab8be730"
+        },
+        "date": 1768901733104,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 114068,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 357334,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 118442,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 196593,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 589139,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 194689,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 323256,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 753923,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 320181,
             "unit": "cycles"
           }
         ]

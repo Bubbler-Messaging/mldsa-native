@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769131895547,
+  "lastUpdate": 1769131911658,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -88240,6 +88240,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 2408569,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "2dd5879b72bf5504d0b5abe28c5f94e86035a7a2",
+          "message": "README: Add AWS-LC and liboqs\n\nAWS-LC merged https://github.com/aws/aws-lc/pull/2902 which integrated the\nC backend of mldsa-native - optimized backends will follow later.\nliboqs merged https://github.com/open-quantum-safe/liboqs/pull/2284 which\nintegrates the C, x86_64, and AArch64 backend into liboqs (replacing the\npqcrystals implementation).\n\nThis commit updates the README accordingly.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-01-23T09:23:22+08:00",
+          "tree_id": "a5ea6259f6592cae1f5f486a11ca6e4c41e4bcdb",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/2dd5879b72bf5504d0b5abe28c5f94e86035a7a2"
+        },
+        "date": 1769131803791,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 827822,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 3234501,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 922943,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 1411192,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 5339130,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 1479222,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 2310909,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 6663559,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 2413128,
             "unit": "cycles"
           }
         ]

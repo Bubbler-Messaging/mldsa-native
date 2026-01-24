@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769257633194,
+  "lastUpdate": 1769257718061,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -67197,6 +67197,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 1363633,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "87f7a12eb4a97f105aff233123e07f02fa907cff",
+          "message": "Port: CI test benchmarking binary for M55-AN547 using qemu\n\nThe cycle counts will be zero, but it still tests the PMU code builds.\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-01-24T20:16:55+08:00",
+          "tree_id": "509d914764b64efadb1e98357b161de2007402c5",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/87f7a12eb4a97f105aff233123e07f02fa907cff"
+        },
+        "date": 1769257715910,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 461890,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 2134344,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 546490,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 774445,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 3500129,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 849768,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 1250534,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 4312781,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 1371544,
             "unit": "cycles"
           }
         ]

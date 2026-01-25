@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769317490061,
+  "lastUpdate": 1769317500253,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -455286,6 +455286,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 779148,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "6b9788a7229f33d2d5789da414f0ee83cfb43216",
+          "message": "Port: add native Keccak x1 and x4 unit tests\n\nAdd unit tests for keccakf1600 x1 and x4 permutation functions that\ncompare native implementations against the C reference implementation.\n\n- test_keccakf1600_permute: tests x1 permutation when\n  MLD_USE_FIPS202_X1_NATIVE\n- test_keccakf1600x4_permute: tests x4 permutation when\n  MLD_USE_FIPS202_X4_NATIVE\n- Expose mld_keccakf1600_permute_c via MLD_STATIC_TESTABLE for testing\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-01-25T04:56:47Z",
+          "tree_id": "fdd1bc61e04153083f779efd936a903ac5045d94",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/6b9788a7229f33d2d5789da414f0ee83cfb43216"
+        },
+        "date": 1769317492934,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 272196,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 803158,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 272922,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 467876,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1317528,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 450640,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 797341,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1779864,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 774365,
             "unit": "cycles"
           }
         ]

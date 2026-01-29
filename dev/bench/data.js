@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769694316978,
+  "lastUpdate": 1769694320167,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -242717,6 +242717,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 109742,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "749490e9eca9fe33aca4dabcfe09dc985848d100",
+          "message": "Add Isabelle proofs for ML-DSA Barrett division correctness\n\nFormalize the mathematical argument that Barrett division correctly\ncomputes round-half-down division for the parameters used in ML-DSA's\nDecompose routine (both C/AVX2 and AArch64 variants).\n\nNote: Proofs operate on unbounded integers, not fixed-width words.\nConnecting to actual implementations requires additional word-level\nand source-level reasoning.\n\nSigned-off-by: Hanno Becker <beckphan@amazon.co.uk>",
+          "timestamp": "2026-01-29T13:41:26Z",
+          "tree_id": "b2347e24005c80d99b5ff2b5d7f988b07ac6ccf5",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/749490e9eca9fe33aca4dabcfe09dc985848d100"
+        },
+        "date": 1769694265637,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 42148,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 133560,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 44664,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 73667,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 217044,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 74283,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 107969,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 250160,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 110587,
             "unit": "cycles"
           }
         ]

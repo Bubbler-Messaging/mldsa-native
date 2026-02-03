@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770103744095,
+  "lastUpdate": 1770103762246,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -353521,6 +353521,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 372793,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "89f34e593f8fb13d9ef4caaa2e14cee9cb4ec746",
+          "message": "CI: Add OpenTitan build test\n\nAdd CI workflow to verify that mldsa-native builds correctly\nwithin the OpenTitan (expo) build system. Only builds the test\nbinary without running the Verilator simulation, as ML-DSA is\ntoo slow for simulation in CI.\n\n- Resolves https://github.com/pq-code-package/mldsa-native/issues/886\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-03T15:24:35+08:00",
+          "tree_id": "edd0e724509f8bd7e1d1cbdc52c14645c76c3fad",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/89f34e593f8fb13d9ef4caaa2e14cee9cb4ec746"
+        },
+        "date": 1770103761698,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 128340,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 447711,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 144657,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 220297,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 727689,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 223199,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 365155,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 926147,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 372805,
             "unit": "cycles"
           }
         ]

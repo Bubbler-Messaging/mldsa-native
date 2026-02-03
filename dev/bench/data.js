@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770098570530,
+  "lastUpdate": 1770098605981,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -439280,6 +439280,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 618622,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "3b61742a88c956fa22a24e91e06a217132c4e000",
+          "message": "CI: Add AWS-LC integration CI testing against v1.67.0\n\nCore differences to mlkem-native:\n - We only test against a fixed version, not against most recent main (the test\n   against main does not seem to reveal interesting problems so far anyway)\n - We fix a typo integration-awslc.yml matrix.flags -> matrix.test.flags\n\nI have opened https://github.com/pq-code-package/mlkem-native/pull/1535 to\nconsolidate those.\n\n- Resolves https://github.com/pq-code-package/mldsa-native/issues/902\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-03T13:57:51+08:00",
+          "tree_id": "7ee25f8406bb1bec31d319f7876d44ce2cfff125",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/3b61742a88c956fa22a24e91e06a217132c4e000"
+        },
+        "date": 1770098605531,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 212644,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 760334,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 234371,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 380898,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1254025,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 371945,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 605377,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1597678,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 619847,
             "unit": "cycles"
           }
         ]

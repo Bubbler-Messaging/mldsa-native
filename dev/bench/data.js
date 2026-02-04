@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770177587018,
+  "lastUpdate": 1770177592084,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -420169,6 +420169,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 320450,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "1b60df0de7149bc5890e0e92bbeb0813f8d35f61",
+          "message": "ACVP: Correct max message length from 65536 bytes to 65536 bits (8192 bytes)\n\nThe ACVP specification (https://pages.nist.gov/ACVP/draft-celi-acvp-ml-dsa.html)\nsays that the message length is at most 65536 bits (8192 bytes).\nWe incorrectly used 65536 bytes which results in excessive memory allocation\nin acvp_mldsa.c  which can be problematic on devices with limited stack/memory.\nThis commit corrects the maximum length.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-04T11:54:58+08:00",
+          "tree_id": "6e0a50d2ac6708032fac73288b1a98bea99aea1a",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/1b60df0de7149bc5890e0e92bbeb0813f8d35f61"
+        },
+        "date": 1770177477672,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 113629,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 356743,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 118335,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 196789,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 589454,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 194843,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 323318,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 753883,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 320293,
             "unit": "cycles"
           }
         ]

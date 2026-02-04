@@ -440,7 +440,7 @@ __contract__(
   requires(memory_no_alias(a, sizeof(int32_t) * MLDSA_N))
   requires(0 <= B && B <= MLDSA_Q - REDUCE32_RANGE_MAX)
   requires(array_bound(a, 0, MLDSA_N, -REDUCE32_RANGE_MAX, REDUCE32_RANGE_MAX))
-  ensures(return_value == MLD_NATIVE_FUNC_FALLBACK || return_value == MLD_NATIVE_FUNC_SUCCESS)
+  ensures(return_value == MLD_NATIVE_FUNC_FALLBACK || return_value == 0 || return_value == 1)
   ensures((return_value == 0) == array_abs_bound(a, 0, MLDSA_N, B))
 );
 #endif /* MLD_USE_NATIVE_POLY_CHKNORM */

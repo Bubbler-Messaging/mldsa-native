@@ -4,13 +4,15 @@
 include ../Makefile_params.common
 
 HARNESS_ENTRY = harness
-HARNESS_FILE =poly_chknorm_native_harness
+HARNESS_FILE = poly_chknorm_native_aarch64_harness
 
 # This should be a unique identifier for this proof, and will appear on the
 # Litani dashboard. It can be human-readable and contain spaces if you wish.
-PROOF_UID = poly_chknorm_native
+PROOF_UID = poly_chknorm_native_aarch64
 
-DEFINES += -DMLD_CONFIG_USE_NATIVE_BACKEND_ARITH -DMLD_CONFIG_ARITH_BACKEND_FILE="\"dummy_backend.h\""
+# We need to set MLD_CHECK_APIS as otherwise mldsa/src/native/api.h won't be
+# included, which contains the CBMC specifications.
+DEFINES += -DMLD_CONFIG_USE_NATIVE_BACKEND_ARITH -DMLD_CONFIG_ARITH_BACKEND_FILE="\"$(SRCDIR)/mldsa/src/native/aarch64/meta.h\"" -DMLD_CHECK_APIS
 INCLUDES +=
 
 REMOVE_FUNCTION_BODY +=
@@ -19,10 +21,9 @@ UNWINDSET +=
 PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
 PROJECT_SOURCES += $(SRCDIR)/mldsa/src/poly.c
 
-CHECK_FUNCTION_CONTRACTS=mld_poly_chknorm
-USE_FUNCTION_CONTRACTS=mld_poly_chknorm_native
-USE_FUNCTION_CONTRACTS+=mld_poly_chknorm_c
-USE_FUNCTION_CONTRACTS+=mld_ct_cmask_nonzero_u32
+CHECK_FUNCTION_CONTRACTS=mld_poly_chknorm_native
+USE_FUNCTION_CONTRACTS = mld_poly_chknorm_asm
+USE_FUNCTION_CONTRACTS += mld_sys_check_capability
 APPLY_LOOP_CONTRACTS=on
 USE_DYNAMIC_FRAMES=1
 
@@ -30,7 +31,7 @@ USE_DYNAMIC_FRAMES=1
 EXTERNAL_SAT_SOLVER=
 CBMCFLAGS=--smt2
 
-FUNCTION_NAME = poly_chknorm_native
+FUNCTION_NAME = poly_chknorm_native_aarch64
 
 # If this proof is found to consume huge amounts of RAM, you can set the
 # EXPENSIVE variable. With new enough versions of the proof tools, this will
@@ -43,7 +44,7 @@ CBMC_OBJECT_BITS = 8
 
 # If you require access to a file-local ("static") function or object to conduct
 # your proof, set the following (and do not include the original source file
-# ("mldsa/poly.c") in PROJECT_SOURCES).
+# ("mldsa/src/poly.c") in PROJECT_SOURCES).
 # REWRITTEN_SOURCES = $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i
 # include ../Makefile.common
 # $(PROOFDIR)/<__SOURCE_FILE_BASENAME__>.i_SOURCE = $(SRCDIR)/mldsa/src/poly.c

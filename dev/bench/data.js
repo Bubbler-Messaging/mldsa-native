@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770287305386,
+  "lastUpdate": 1770287514754,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -92035,6 +92035,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 2415856,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "41cf2b1527c27f8e6093263d498296641381d63f",
+          "message": "AArch64: Use alignment-safe Neon load/stores in rej_uniform/polz_unpack\n\nVarious loads and stores in rej_uniform{,_eta2,_eta4}_asm and\npolz_unpack_{17,19}_asm use unaligned addresses, which faults on bare-metal\nAArch64 without an MMU (Device memory) or when alignment checking is enabled.\nReplace ldr/str with ld1/st1 which do not require such alignment.\n\nThis commit is very similar to the changes applied to rej_uniform in\nmlkem-native in https://github.com/pq-code-package/mlkem-native/pull/1544.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-05T10:17:31Z",
+          "tree_id": "10165a3117bd26f32601b73e2cef47b2304b9545",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/41cf2b1527c27f8e6093263d498296641381d63f"
+        },
+        "date": 1770287385326,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 829634,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 3235135,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 919475,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 1411345,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 5342622,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 1479961,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 2312523,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 6676266,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 2410146,
             "unit": "cycles"
           }
         ]

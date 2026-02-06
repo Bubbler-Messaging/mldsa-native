@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770365693181,
+  "lastUpdate": 1770365709970,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -336549,6 +336549,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 194517,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "605d103d482b08e4def9a379b2f11472b1b32d91",
+          "message": "Port-CI: Add scheduled daily test against AWS-LC HEAD\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-02-06T16:11:14+08:00",
+          "tree_id": "d7eb9bf2e237229d9bbbd226b587e51a54e401b0",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/605d103d482b08e4def9a379b2f11472b1b32d91"
+        },
+        "date": 1770365637418,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 68107,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 202154,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 70790,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 121115,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 331397,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 118078,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 198417,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 427180,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 194378,
             "unit": "cycles"
           }
         ]

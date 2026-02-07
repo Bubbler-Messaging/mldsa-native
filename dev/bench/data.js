@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770436411529,
+  "lastUpdate": 1770436417698,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -227401,6 +227401,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 458542,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "d06f9ad5156ba0a575a0d963f159d54e00ffcb1c",
+          "message": "x86_64/AArch64: Add .size directive to all assembly functions\n\nAdd size information to function symbols.\nsize information is added through a MLD_ASM_FN_SIZE macro (mapping to .size\nfor elf-targets and nothing otherwise) which gets added automatically by\nautogen. The makes the assembly\nfunctions show up with their correct size in the elf instead of always\nhaving a zero size, making it easier to see how much space each\nfunction takes up.\n\nCo-authored-by: Anders Sonmark <Anders.Sonmark@axis.com>\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-07T03:49:20Z",
+          "tree_id": "517aee7a579c64c618c74f25223d9f881189a028",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/d06f9ad5156ba0a575a0d963f159d54e00ffcb1c"
+        },
+        "date": 1770436416714,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 157619,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 549584,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 169414,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 267909,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 901845,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 274058,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 450268,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1162153,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 460019,
             "unit": "cycles"
           }
         ]

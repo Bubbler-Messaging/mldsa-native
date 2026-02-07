@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770441198745,
+  "lastUpdate": 1770441424587,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -93139,6 +93139,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 2417436,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "2fde6aeb5681b33f1fecf575ff5e7e4b702a23e9",
+          "message": "Mark all non-static declarations as internal or external\n\nThis commit ensures that all non-static, non-assembly symbols declared\nby mldsa-native are explicitly marked as internal or external via the\nMLD_CONFIG_INTERNAL_API_QUALIFIER / MLD_CONFIG_EXTERNAL_API_QUALIFIER\nconfiguration options.\n\nIn particular, when mldsa-native is being built in a monobuild\nand MLD_CONFIG_INTERNAL_API_QUALIFIER set to `static`, only the\nFIPS204 API should be of external linkage.\nIf mldsa-native is being built in a monobuild, directly included into\nanother compilation unit, and both MLD_CONFIG_INTERNAL_API_QUALIFIER\nand MLD_CONFIG_EXTERNAL_API_QUALIFIER set to `static`, no non-assembly\nsymbols should be generated.\n\nSigned-off-by: Hanno Becker <beckphan@amazon.co.uk>",
+          "timestamp": "2026-02-07T13:01:34+08:00",
+          "tree_id": "24b11f57603e6f0bbab93a52af5faf35f82c03fb",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/2fde6aeb5681b33f1fecf575ff5e7e4b702a23e9"
+        },
+        "date": 1770441124053,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 830405,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 3243573,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 922129,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 1416723,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 5369568,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 1486237,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 2309636,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 6662088,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 2415715,
             "unit": "cycles"
           }
         ]

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770538842493,
+  "lastUpdate": 1770538976957,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -93484,6 +93484,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 2415708,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "Anders.Sonmark@axis.com",
+            "name": "Anders Sonmark",
+            "username": "flynd"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "26ce481ae714c5a01ae96e5fa4e6eafe1aa83d94",
+          "message": "native: Give single assembly unit a unique name\n\nGive the single compilation units unique names by renaming the assembly\nfile.  This removes the need for having unique names for object files\nbased on the source language and allows simpler rules, for example\n\"%.o: %.c\" and \"%.o: %.S\".\n\nSigned-off-by: Anders Sonmark <Anders.Sonmark@axis.com>",
+          "timestamp": "2026-02-08T16:14:42+08:00",
+          "tree_id": "6b62d5ed57573484e8e3c427d58711671015c188",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/26ce481ae714c5a01ae96e5fa4e6eafe1aa83d94"
+        },
+        "date": 1770538700393,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 829910,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 3233720,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 922872,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 1411956,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 5341283,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 1480302,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 2312414,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 6668451,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 2409793,
             "unit": "cycles"
           }
         ]

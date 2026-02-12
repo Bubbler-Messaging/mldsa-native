@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770907347435,
+  "lastUpdate": 1770907483074,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -47327,6 +47327,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 904204,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jeffricardini@gmail.com",
+            "name": "Jefferson Ricardini",
+            "username": "jricardini"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "e3c632a2cf6c05a3525670db9c8ba0e3973056ac",
+          "message": "Baremetal: Add Cortex-M33 MPS3-AN524 platform support\n\nAdd bare-metal platform support for Cortex-M33 on MPS3-AN524,\ntested via qemu (qemu-system-arm -M mps3-an524).\n\n- Add platform makefile and qemu exec wrapper for M33-AN524\n- Platform files are provided by pqmx, see https://github.com/slothy-optimizer/pqmx/pull/116\n- Add Cortex-M33 DWT cycle counter support in HAL\n  (distinct from Cortex-M55 PMU-based counting)\n- Generalize Nix package from m55-an547 to pqmx to serve\n  both M55-AN547 and M33-AN524 platforms\n- Allow MLD_BUMP_ALLOC_SIZE to be overridden at compile time (we only have a\n  96 KiB stack)\n- Enable reduced RAM mode by default\n- Add M33 baremetal test to CI matrix\n\nCo-authored-by: Jefferson Ricardini <jeffricardini@gmail.com>\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-12T22:20:55+08:00",
+          "tree_id": "104cde9e3a98462427d2b44d0385da40410a9a55",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/e3c632a2cf6c05a3525670db9c8ba0e3973056ac"
+        },
+        "date": 1770907479159,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 323288,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 1190262,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 338901,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 582482,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 2003378,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 557506,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 887143,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 2480349,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 913575,
             "unit": "cycles"
           }
         ]

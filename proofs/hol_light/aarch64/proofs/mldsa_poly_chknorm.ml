@@ -79,53 +79,51 @@ let CHKNORM_LENGTH_SIMPLIFY_CONV =
 (* Helper lemmas                                                             *)
 (* ------------------------------------------------------------------------- *)
 
-(* ival(iword(abs x)) = abs x when abs x < 2^31 *)
-let IVAL_IWORD_ABS_32 = prove(
-  `!x:int. abs x < &2 pow 31 ==> ival(iword (abs x) : 32 word) = abs x`,
-  GEN_TAC THEN DISCH_TAC THEN
-  MATCH_MP_TAC IVAL_IWORD THEN
-  REWRITE_TAC[DIMINDEX_32] THEN CONV_TAC NUM_REDUCE_CONV THEN
-  MP_TAC(SPEC `x:int` INT_ABS_POS) THEN ASM_INT_ARITH_TAC);;
+(* Expression emerging from the AVX2 code converting bit to 32-bit mask *)
+let bit_to_mask32 = new_definition `bit_to_mask32 (b : bool) : 32 word = word_neg (word (bitval b) : 32 word)`;;
 
-(* MAX of {0, 0xFFFFFFFF} conditionals collapses to a single conditional *)
-let MAX_COND_4_LEMMA = prove(
-  `MAX (if b0 then 4294967295 else 0)
-       (MAX (if b1 then 4294967295 else 0)
-            (MAX (if b2 then 4294967295 else 0)
-                 (if b3 then 4294967295 else 0))) =
-   if (b0 \/ b1 \/ b2 \/ b3) then 4294967295 else 0`,
-  MAP_EVERY BOOL_CASES_TAC [`b0:bool`; `b1:bool`; `b2:bool`; `b3:bool`] THEN
-  REWRITE_TAC[] THEN ARITH_TAC);;
+(* Expression used for bounds check itself *)
+let bd = new_definition `bd (v : int32) (b: int32) : bool =
+    (ival (iword (abs (ival v)) : 32 word) >= ival (word_zx (word_zx b : 64 word) : 32 word))`;;
 
-(* (?i. i < 256 /\ P i) <=> P 0 \/ ... \/ P 255 *)
-let EXISTS_LT_256 =
-  let p = `P:num->bool` and i_var = `i:num` in
-  let mk_p k = mk_comb(p, mk_small_numeral k) in
-  let rhs = end_itlist (fun a b -> mk_disj(a,b)) (map mk_p (0--255)) in
-  let lhs = mk_exists(i_var,
-    mk_conj(mk_comb(mk_comb(`(<)`, i_var), `256`), mk_comb(p, i_var))) in
-  let arith_rules =
-    ARITH_RULE `i < 1 <=> i = 0` ::
-    map (fun k -> ARITH_RULE(subst [mk_small_numeral k, `n:num`;
-                                     mk_small_numeral(k-1), `m:num`]
-                                    `i < n <=> i = m \/ i < m`)) (2--256) in
-  prove(mk_forall(p, mk_eq(lhs, rhs)),
-    GEN_TAC THEN REWRITE_TAC arith_rules THEN
-    REWRITE_TAC[RIGHT_OR_DISTRIB; EXISTS_OR_THM; UNWIND_THM2] THEN
-    REWRITE_TAC[DISJ_ACI]);;
+let MAX_VAL_BIT_TO_MASK32 = prove(
+  `MAX (val (bit_to_mask32 b0)) (val (bit_to_mask32 b1)) = val (bit_to_mask32 (b0 \/ b1))`,
+  REWRITE_TAC[bit_to_mask32] THEN
+  BOOL_CASES_TAC `b0:bool` THEN BOOL_CASES_TAC `b1:bool` THEN
+  REWRITE_TAC[BITVAL_CLAUSES] THEN CONV_TAC WORD_REDUCE_CONV THEN ARITH_TAC);;
 
-(* word_or of word_neg(word(bitval ...)) combines disjunctively *)
-let WORD_OR_NEG_BITVAL = prove(
-  `word_or (word_neg (word (bitval b1) : 32 word))
-           (word_neg (word (bitval b2) : 32 word)) : 32 word =
-   word_neg (word (bitval (b1 \/ b2)))`,
-  MAP_EVERY BOOL_CASES_TAC [`b1:bool`; `b2:bool`] THEN
-  REWRITE_TAC[bitval] THEN CONV_TAC WORD_REDUCE_CONV);;
+let BD_SIMP = prove(
+  `abs(ival(x : int32)) < &2 pow 31 ==> (bd x b <=> abs (ival x) >= ival b)`,
+  REWRITE_TAC[bd] THEN DISCH_TAC THEN
+  SUBGOAL_THEN `ival(iword(abs(ival(x:32 word))) : 32 word) = abs(ival x)` SUBST1_TAC THENL
+  [MATCH_MP_TAC IVAL_IWORD THEN REWRITE_TAC[DIMINDEX_32] THEN CONV_TAC NUM_REDUCE_CONV THEN
+   FIRST_X_ASSUM MP_TAC THEN REWRITE_TAC[INT_ABS_POS] THEN INT_ARITH_TAC; ALL_TAC] THEN
+  SUBGOAL_THEN `(word_zx:64 word -> 32 word) ((word_zx:32 word -> 64 word) b) = b` SUBST1_TAC THENL
+  [MATCH_MP_TAC WORD_ZX_ZX THEN REWRITE_TAC[DIMINDEX_32; DIMINDEX_64] THEN ARITH_TAC;
+   REFL_TAC]);;
 
-(* val(word_neg(word(bitval b))) = if b then 0xFFFFFFFF else 0 *)
-let VAL_WORD_NEG_BITVAL = prove(
-  `val (word_neg (word (bitval b) : 32 word)) = if b then 4294967295 else 0`,
-  BOOL_CASES_TAC `b:bool` THEN REWRITE_TAC[bitval] THEN CONV_TAC WORD_REDUCE_CONV);;
+let BIT_TO_MASK32_OR = prove(
+  `word_or (bit_to_mask32 b0) (bit_to_mask32 b1) = bit_to_mask32 (b0 \/ b1)`,
+  REWRITE_TAC[bit_to_mask32] THEN
+  BOOL_CASES_TAC `b0:bool` THEN BOOL_CASES_TAC `b1:bool` THEN
+  REWRITE_TAC[BITVAL_CLAUSES] THEN CONV_TAC WORD_REDUCE_CONV);;
+
+let MASK32_TO_BIT = prove(
+  `(word_zx:32 word -> 64 word) (word_and ((word_zx:64 word -> 32 word)
+     ((word_zx:32 word -> 64 word) (word_subword (word (val (bit_to_mask32 b)) : 128 word) (0,32))))
+     (word 1)) = word (bitval b) : 64 word`,
+  REWRITE_TAC[bit_to_mask32] THEN
+  BOOL_CASES_TAC `b:bool` THEN REWRITE_TAC[BITVAL_CLAUSES] THEN
+  CONV_TAC WORD_REDUCE_CONV);;
+
+let WORD_JOIN_OR_TYBIT0 = prove(
+  `word_or (word_join (a:N word) (b:N word) : (N tybit0) word) (word_join (c:N word) (d:N word)) =
+   word_join (word_or a c) (word_or b d)`,
+  REWRITE_TAC[WORD_EQ_BITS_ALT; BIT_WORD_OR; BIT_WORD_JOIN; DIMINDEX_TYBIT0] THEN
+  X_GEN_TAC `i:num` THEN
+  ASM_CASES_TAC `i < 2 * dimindex(:N)` THEN ASM_REWRITE_TAC[] THEN
+  ASM_CASES_TAC `i < dimindex(:N)` THEN ASM_REWRITE_TAC[] THEN
+  MATCH_MP_TAC(TAUT `p ==> (q <=> p /\ q)`) THEN ASM_ARITH_TAC);;
 
 (* ------------------------------------------------------------------------- *)
 (* Core correctness theorem                                                  *)
@@ -147,12 +145,12 @@ let MLDSA_POLY_CHKNORM_CORRECT = prove(
   CONV_TAC CHKNORM_LENGTH_SIMPLIFY_CONV THEN
   MAP_EVERY X_GEN_TAC [`a:int64`; `x:num->int32`; `bound:int32`; `pc:num`] THEN
   REWRITE_TAC[MAYCHANGE_REGS_AND_FLAGS_PERMITTED_BY_ABI; C_ARGUMENTS;
-              NONOVERLAPPING_CLAUSES; EXISTS_LT_256] THEN
+              NONOVERLAPPING_CLAUSES] THEN
   DISCH_THEN(REPEAT_TCL CONJUNCTS_THEN ASSUME_TAC) THEN
   (* Expand bounded foralls in precondition to 256 explicit cases *)
-  CONV_TAC(RATOR_CONV(LAND_CONV(ONCE_DEPTH_CONV
-   (EXPAND_CASES_CONV THENC ONCE_DEPTH_CONV NUM_MULT_CONV)))) THEN
   ENSURES_INIT_TAC "s0" THEN
+  UNDISCH_TAC `forall i. i < 256 ==> read (memory :> bytes32 (word_add a (word (4 * i)))) s0 = x i` THEN
+  CONV_TAC(ONCE_DEPTH_CONV (EXPAND_CASES_CONV THENC ONCE_DEPTH_CONV NUM_MULT_CONV)) THEN REPEAT STRIP_TAC THEN
   (* Merge bytes32 reads into bytes128 reads (64 merges for 256 coefficients) *)
   MP_TAC(end_itlist CONJ (map (fun n -> READ_MEMORY_MERGE_CONV 2
             (subst[mk_small_numeral(16*n),`n:num`]
@@ -165,35 +163,23 @@ let MLDSA_POLY_CHKNORM_CORRECT = prove(
   MAP_UNTIL_TARGET_PC (fun n ->
     ARM_STEPS_TAC MLDSA_POLY_CHKNORM_EXEC [n] THEN
     RULE_ASSUM_TAC(CONV_RULE(TOP_DEPTH_CONV WORD_SIMPLE_SUBWORD_CONV)) THEN
-    RULE_ASSUM_TAC(REWRITE_RULE[WORD_SUBWORD_OR])) 1 THEN
-  (* Collapse nested word_or of word_neg pairs, then take val *)
-  RULE_ASSUM_TAC(REWRITE_RULE[WORD_OR_NEG_BITVAL; VAL_WORD_NEG_BITVAL]) THEN
+    RULE_ASSUM_TAC(REWRITE_RULE[WORD_SUBWORD_OR; GSYM bit_to_mask32; WORD_JOIN_OR_TYBIT0; SYM (SPEC_ALL bd); BIT_TO_MASK32_OR;
+      MAX_VAL_BIT_TO_MASK32; MASK32_TO_BIT])) 1 THEN
+
   (* Close the state relation *)
   ENSURES_FINAL_STATE_TAC THEN ASM_REWRITE_TAC[] THEN
-  (* Prove ival(iword(abs(ival x i))) = abs(ival(x i)) for all 256 coefficients *)
-  SUBGOAL_THEN
-    `!i. i < 256 ==> ival(iword(abs(ival((x:num->int32) i))) : 32 word) = abs(ival(x i))`
-    ASSUME_TAC THENL
-  [REPEAT STRIP_TAC THEN MATCH_MP_TAC IVAL_IWORD_ABS_32 THEN
-   UNDISCH_TAC `(i:num) < 256` THEN SPEC_TAC(`i:num`, `i:num`) THEN
-   CONV_TAC EXPAND_CASES_CONV THEN ASM_REWRITE_TAC[];
-   ALL_TAC] THEN
-  (* Apply the ival/iword simplification for all 256 coefficients *)
-  FIRST_X_ASSUM(fun th -> REWRITE_TAC
-    (map (fun k -> MATCH_MP th
-       (ARITH_RULE(subst [mk_small_numeral k, `n:num`] `n < 256`)))
-     (0--255))) THEN
-  (* Simplify word_zx round-trip for bound *)
-  REWRITE_TAC[prove(
-    `ival(word_zx ((word_zx:32 word->64 word) (bound:32 word)) : 32 word) = ival bound`,
-    BITBLAST_TAC)] THEN
-  (* Rewrite MAX of conditionals to a single conditional *)
-  REWRITE_TAC[MAX_COND_4_LEMMA] THEN
-  (* Normalize the disjunction order *)
-  REWRITE_TAC[DISJ_ACI] THEN
-  (* Case split on the condition and simplify word operations *)
-  COND_CASES_TAC THEN
-  ASM_REWRITE_TAC[BITVAL_CLAUSES] THEN CONV_TAC WORD_REDUCE_CONV);;
+  DISCARD_MATCHING_ASSUMPTIONS [`read t s = x`] THEN
+
+  RULE_ASSUM_TAC (CONV_RULE (ONCE_DEPTH_CONV EXPAND_CASES_CONV)) THEN
+  REPEAT(FIRST_X_ASSUM(CONJUNCTS_THEN ASSUME_TAC)) THEN
+  IMP_REWRITE_TAC [BD_SIMP] THEN
+  POP_ASSUM_LIST (K ALL_TAC) THEN
+
+  (* Convert to ! instead of ? and split *)
+  GEN_REWRITE_TAC (BINOP_CONV o ONCE_DEPTH_CONV) [prove (`b = ~ (~ (b : bool))`, REWRITE_TAC[])] THEN
+  GEN_REWRITE_TAC TOP_SWEEP_CONV [MESON[] `~(?i. i < n /\ P i) <=> (!i. i < n ==> ~P i)`; DE_MORGAN_THM] THEN
+  CONV_TAC (ONCE_DEPTH_CONV EXPAND_CASES_CONV) THEN
+  REPEAT AP_TERM_TAC THEN EQ_TAC THEN SIMP_TAC[]);;
 
 (* ------------------------------------------------------------------------- *)
 (* Subroutine correctness theorem (includes return)                          *)
@@ -220,9 +206,8 @@ let MLDSA_POLY_CHKNORM_SUBROUTINE_CORRECT = prove(
   let TWEAK_CONV =
     ONCE_DEPTH_CONV EXPAND_CASES_CONV THENC
     ONCE_DEPTH_CONV NUM_MULT_CONV THENC
-    PURE_REWRITE_CONV [WORD_ADD_0; EXISTS_LT_256] in
+    PURE_REWRITE_CONV [WORD_ADD_0] in
   CONV_TAC TWEAK_CONV THEN
   ARM_ADD_RETURN_NOSTACK_TAC MLDSA_POLY_CHKNORM_EXEC
    (CONV_RULE TWEAK_CONV
      (CONV_RULE CHKNORM_LENGTH_SIMPLIFY_CONV MLDSA_POLY_CHKNORM_CORRECT)));;
-

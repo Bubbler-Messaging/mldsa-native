@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770969404187,
+  "lastUpdate": 1770969415982,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -301501,6 +301501,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 383210,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "e6dde527065152dce8536f6a1caf1813f2cd5a64",
+          "message": "CI: Disable nixos/nix compatibility test broken by containerd v2.2.0\n\nDocker Engine 29.1.5 (API 1.52, containerd v2.2.0) rejects NixOS\n/etc/group symlink into /nix/store/ as \"path escapes from parent\".\nSee https://github.com/containerd/containerd/issues/12683\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-13T15:52:43+08:00",
+          "tree_id": "81bb5b184ebcf60ce8bcd395de3c779b4b24f5e5",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/e6dde527065152dce8536f6a1caf1813f2cd5a64"
+        },
+        "date": 1770969415211,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 134953,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 524186,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 147478,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 227025,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 860214,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 234757,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 371054,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1078684,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 382786,
             "unit": "cycles"
           }
         ]

@@ -108,11 +108,29 @@ __contract__(
 
 #define mld_polyz_unpack_17_asm MLD_NAMESPACE(polyz_unpack_17_asm)
 void mld_polyz_unpack_17_asm(int32_t *r, const uint8_t *buf,
-                             const uint8_t *indices);
+                             const uint8_t *indices)
+/* This must be kept in sync with the HOL-Light specification
+ * in proofs/hol_light/aarch64/proofs/mldsa_polyz_unpack_17.ml */
+__contract__(
+  requires(memory_no_alias(r, sizeof(int32_t) * MLDSA_N))
+  requires(memory_no_alias(buf, 576))
+  requires(indices == mld_polyz_unpack_17_indices)
+  assigns(memory_slice(r, sizeof(int32_t) * MLDSA_N))
+  ensures(array_bound(r, 0, MLDSA_N, -((1 << 17) - 1), (1 << 17) + 1))
+);
 
 #define mld_polyz_unpack_19_asm MLD_NAMESPACE(polyz_unpack_19_asm)
 void mld_polyz_unpack_19_asm(int32_t *r, const uint8_t *buf,
-                             const uint8_t *indices);
+                             const uint8_t *indices)
+/* This must be kept in sync with the HOL-Light specification
+ * in proofs/hol_light/aarch64/proofs/mldsa_polyz_unpack_19.ml */
+__contract__(
+  requires(memory_no_alias(r, sizeof(int32_t) * MLDSA_N))
+  requires(memory_no_alias(buf, 640))
+  requires(indices == mld_polyz_unpack_19_indices)
+  assigns(memory_slice(r, sizeof(int32_t) * MLDSA_N))
+  ensures(array_bound(r, 0, MLDSA_N, -((1 << 19) - 1), (1 << 19) + 1))
+);
 
 #define mld_poly_pointwise_montgomery_asm \
   MLD_NAMESPACE(poly_pointwise_montgomery_asm)

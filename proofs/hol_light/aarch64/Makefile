@@ -54,7 +54,9 @@ endif
 SPLIT=tr ';' '\n'
 
 OBJ = mldsa/mldsa_poly_caddq.o \
-      mldsa/mldsa_poly_chknorm.o
+      mldsa/mldsa_poly_chknorm.o \
+      mldsa/mldsa_polyz_unpack_17.o \
+      mldsa/mldsa_polyz_unpack_19.o
 
 # According to
 # https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms,

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1771060940214,
+  "lastUpdate": 1771060958370,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -96106,6 +96106,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 2418798,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "0b1c5364dc468a726aab4adc12a9385ba55f0306",
+          "message": "Consolidate inclusion of <string.h> via common.h\n\nWhile consolidating <stdint.h> includes, we observed that <string.h>\nis already transitively included through common.h. However, many source\nfiles still explicitly included <string.h>.\n\nThis change removes redundant <string.h> includes across the codebase\nand standardizes include order by placing the corresponding foo.h at\nthe top of each foo.c, following the convention used in mlkem-native.\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-02-14T09:16:57Z",
+          "tree_id": "6442d07f7051c505616fb19308b88bd78fc477b0",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/0b1c5364dc468a726aab4adc12a9385ba55f0306"
+        },
+        "date": 1771060798751,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 828343,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 3235012,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 920749,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 1413905,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 5341776,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 1478062,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 2313582,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 6664057,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 2412445,
             "unit": "cycles"
           }
         ]

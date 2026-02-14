@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1771045881139,
+  "lastUpdate": 1771045885821,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -395402,6 +395402,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 205679,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "39fe99557325be19c2b1ce2ac6535f81deec00ba",
+          "message": "Armv8.1-M: Disable backend by default\n\nThe Armv8.1-M + MVE backend is still in active development and has\nnot undergone the same level of audit as the rest of the code.\n\nThis commit extends the documentation to make this clear.\n\nThe commit also disables the Armv8.1-M + MVE backend by default,\nand instead explicitly enables it in the an547 baremetal Makefile.\n\n- Port of https://github.com/pq-code-package/mlkem-native/commit/9d2f1c24f30b9747cc8d45d67052ddb0a4b597f0\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-02-14T05:06:40Z",
+          "tree_id": "ffac40a21a71237304205f52fd4543194ed94416",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/39fe99557325be19c2b1ce2ac6535f81deec00ba"
+        },
+        "date": 1771045779182,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 72303,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 211861,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 75640,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 127572,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 350323,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 125472,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 208006,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 448977,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 205665,
             "unit": "cycles"
           }
         ]

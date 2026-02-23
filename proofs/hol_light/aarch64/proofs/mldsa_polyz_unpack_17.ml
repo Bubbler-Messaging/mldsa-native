@@ -140,10 +140,7 @@ let MLDSA_POLYZ_UNPACK_17_CORRECT = prove
                   read(memory :> bytes(b,576)) s = num_of_wordlist l)
              (\s. read PC s = word(pc + MLDSA_POLYZ_UNPACK_17_CORE_END) /\
                   read(memory :> bytes(r,1024)) s =
-                       num_of_wordlist (MAP zunpack17 l) /\
-                  (!i. i < 256 ==>
-                       --(&(2 EXP 17) - &1) <= ival(EL i (MAP zunpack17 l)) /\
-                       ival(EL i (MAP zunpack17 l)) <= &(2 EXP 17)))
+                       num_of_wordlist (MAP zunpack17 l))
              (MAYCHANGE_REGS_AND_FLAGS_PERMITTED_BY_ABI ,,
               MAYCHANGE [memory :> bytes(r,1024)])`,
   CONV_TAC LENGTH_SIMPLIFY_CONV THEN
@@ -206,7 +203,6 @@ let MLDSA_POLYZ_UNPACK_17_CORRECT = prove
     SIMP_ZUNPACK_TAC 18 ZUNPACK17_CORRECT) 1 THEN
 
   ENSURES_FINAL_STATE_TAC THEN ASM_REWRITE_TAC[] THEN
-  CONJ_TAC THENL [
 
   (*** Fold output back to MAP zunpack17 l ***)
   REPEAT (FIRST_X_ASSUM(MP_TAC o check
@@ -222,13 +218,7 @@ let MLDSA_POLYZ_UNPACK_17_CORRECT = prove
   REPLICATE_TAC 2 (CONV_TAC (ONCE_REWRITE_CONV [GSYM NUM_OF_PAIR_WORDLIST])) THEN
   REWRITE_TAC[pair_wordlist] THEN
   CONV_TAC (ONCE_DEPTH_CONV BYTES_EQ_NUM_OF_WORDLIST_EXPAND_CONV) THEN
-  ASM_REWRITE_TAC[GSYM BYTES128_WBYTES];
-
-  (*** ival bounds ***)
-  REPEAT STRIP_TAC THEN
-  MP_TAC(CONV_RULE NUM_REDUCE_CONV
-    (ISPECL [`l:(18 word) list`; `i:num`] ZUNPACK17_MAP_BOUND)) THEN
-  ASM_REWRITE_TAC[] THEN SIMP_TAC[]]);;
+  ASM_REWRITE_TAC[GSYM BYTES128_WBYTES]);;
 
 (* ------------------------------------------------------------------------- *)
 (* Subroutine correctness                                                    *)
@@ -260,4 +250,8 @@ let MLDSA_POLYZ_UNPACK_17_SUBROUTINE_CORRECT = prove
               MAYCHANGE [memory :> bytes(r,1024)])`,
   CONV_TAC LENGTH_SIMPLIFY_CONV THEN
   ARM_ADD_RETURN_NOSTACK_TAC MLDSA_POLYZ_UNPACK_17_EXEC
-   (CONV_RULE LENGTH_SIMPLIFY_CONV MLDSA_POLYZ_UNPACK_17_CORRECT));;
+   (CONV_RULE LENGTH_SIMPLIFY_CONV MLDSA_POLYZ_UNPACK_17_CORRECT) THEN
+  REPEAT STRIP_TAC THEN
+  MP_TAC(CONV_RULE NUM_REDUCE_CONV
+    (ISPECL [`l:(18 word) list`; `i:num`] ZUNPACK17_MAP_BOUND)) THEN
+  ASM_REWRITE_TAC[] THEN SIMP_TAC[]);;

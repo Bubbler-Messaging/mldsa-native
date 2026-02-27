@@ -2308,6 +2308,20 @@ def gen_hol_light_asm():
             "aarch64",
         ),
         (
+            "poly_decompose_32_asm.S",
+            "mldsa_poly_decompose_32.S",
+            "dev/aarch64_opt/src",
+            f"-Imldsa/src/native/aarch64/src {aarch64_flags}",
+            "aarch64",
+        ),
+        (
+            "poly_decompose_88_asm.S",
+            "mldsa_poly_decompose_88.S",
+            "dev/aarch64_opt/src",
+            f"-Imldsa/src/native/aarch64/src {aarch64_flags}",
+            "aarch64",
+        ),
+        (
             "polyz_unpack_17_asm.S",
             "mldsa_polyz_unpack_17.S",
             "dev/aarch64_opt/src",

@@ -55,6 +55,8 @@ SPLIT=tr ';' '\n'
 
 OBJ = mldsa/mldsa_poly_caddq.o \
       mldsa/mldsa_poly_chknorm.o \
+      mldsa/mldsa_poly_decompose_32.o \
+      mldsa/mldsa_poly_decompose_88.o \
       mldsa/mldsa_polyz_unpack_17.o \
       mldsa/mldsa_polyz_unpack_19.o
 

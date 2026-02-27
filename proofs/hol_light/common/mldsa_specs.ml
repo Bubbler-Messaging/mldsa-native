@@ -8,6 +8,242 @@
 (* ========================================================================= *)
 
 (* ========================================================================= *)
+(* decompose: Decompose r into high bits r1 and low bits r0                  *)
+(*                                                                           *)
+(* FIPS 204 Algorithm 36 (Decompose):                                        *)
+(*   Input: r in Z_q                                                         *)
+(*   Output: integers r1, r0                                                 *)
+(*   (1: r+ <- r mod q)                          [skipped: r already reduced]*)
+(*   2: r0 <- r mod+/- (2*gamma2)                [centered mod, see cmod]    *)
+(*   3: if r - r0 = q - 1 then                                               *)
+(*   4:   r1 <- 0                                                            *)
+(*   5:   r0 <- r0 - 1                                                       *)
+(*   6: else r1 <- (r - r0) / (2*gamma2)                                     *)
+(*   7: end if                                                               *)
+(*   8: return (r1, r0)                                                      *)
+(*                                                                           *)
+(* decompose32: gamma2 = 261888, 2*gamma2 = 523776, (q-1)/(2*gamma2) = 16.   *)
+(* decompose88: gamma2 =  95232, 2*gamma2 = 190464, (q-1)/(2*gamma2) = 44    *)
+(* ========================================================================= *)
+
+(* --- Centered modular reduction (line 2: mod+/-)                   --- *)
+(* cmod r m returns r mod m centered in (-m/2, m/2].                     *)
+(* The condition r MOD m * 2 <= m is equivalent to r MOD m <= m/2,       *)
+(* but avoids truncation from natural number division by 2.              *)
+
+let cmod = new_definition
+ `cmod (r:num) (m:num) : int =
+    if r MOD m * 2 <= m then &(r MOD m) else &(r MOD m) - &m`;;
+
+(* --- decompose32: GAMMA2 = (Q-1)/32 = 261888 --- *)
+
+let decompose32 = new_definition
+ `decompose32 (r:num) : num # int =
+    let r0 = cmod r 523776 in
+    if &r - r0 = &8380416 then (0, r0 - &1)
+    else (num_of_int(&r - r0) DIV 523776, r0)`;;
+
+(* --- decompose88: GAMMA2 = (Q-1)/88 = 95232 --- *)
+
+let decompose88 = new_definition
+ `decompose88 (r:num) : num # int =
+    let r0 = cmod r 190464 in
+    if &r - r0 = &8380416 then (0, r0 - &1)
+    else (num_of_int(&r - r0) DIV 190464, r0)`;;
+
+(* --- Helper: num_of_int(&r - cmod r m) DIV m computes the highbits --- *)
+
+let CMOD_SUB = prove(
+ `!r m. ~(m = 0) ==>
+    num_of_int(&r - cmod r m) =
+      if r MOD m * 2 <= m then r DIV m * m
+      else (r DIV m + 1) * m`,
+  REPEAT STRIP_TAC THEN REWRITE_TAC[cmod] THEN
+  MP_TAC(SPECL [`r:num`; `m:num`] DIVISION) THEN ASM_REWRITE_TAC[] THEN
+  STRIP_TAC THEN
+  COND_CASES_TAC THEN REWRITE_TAC[] THENL
+  [SUBGOAL_THEN `r MOD m <= r` ASSUME_TAC THENL [ASM_ARITH_TAC; ALL_TAC] THEN
+   SUBGOAL_THEN `&r - &(r MOD m) = &(r - r MOD m) : int`
+     (fun th -> REWRITE_TAC[th; NUM_OF_INT_OF_NUM]) THENL
+   [ASM_SIMP_TAC[GSYM INT_OF_NUM_SUB]; ALL_TAC] THEN
+   ASM_ARITH_TAC;
+   SUBGOAL_THEN `r MOD m <= r` ASSUME_TAC THENL [ASM_ARITH_TAC; ALL_TAC] THEN
+   SUBGOAL_THEN `&r - (&(r MOD m) - &m) = &(r - r MOD m + m) : int`
+     (fun th -> REWRITE_TAC[th; NUM_OF_INT_OF_NUM]) THENL
+   [ASM_SIMP_TAC[GSYM INT_OF_NUM_SUB; GSYM INT_OF_NUM_ADD] THEN INT_ARITH_TAC;
+    ASM_ARITH_TAC]]);;
+
+let CMOD_HIGHBITS = prove(
+ `!r m. ~(m = 0) ==>
+    num_of_int(&r - cmod r m) DIV m =
+      (if r MOD m * 2 <= m then r DIV m else r DIV m + 1)`,
+  REPEAT STRIP_TAC THEN ASM_SIMP_TAC[CMOD_SUB] THEN
+  COND_CASES_TAC THEN REWRITE_TAC[MULT_SYM] THEN
+  ASM_SIMP_TAC[DIV_MULT]);;
+
+(* --- decompose32 lemmas --- *)
+
+(* Equivalence to MOD/DIV form, used in bound proofs *)
+let DECOMPOSE32_EXPAND = prove(
+ `!r. decompose32 r =
+    let r0 = cmod r 523776 in
+    let h = if r MOD 523776 * 2 <= 523776
+            then r DIV 523776
+            else r DIV 523776 + 1 in
+    if h = 16 then (0, r0 - &1)
+    else (h, r0)`,
+  GEN_TAC THEN REWRITE_TAC[decompose32; LET_DEF; LET_END_DEF] THEN
+  MP_TAC(SPECL [`r:num`; `523776`] CMOD_HIGHBITS) THEN
+  ANTS_TAC THENL [ARITH_TAC; DISCH_TAC] THEN
+  MP_TAC(SPECL [`r:num`; `523776`] DIVISION) THEN
+  ANTS_TAC THENL [ARITH_TAC; STRIP_TAC] THEN
+  ASM_CASES_TAC `r MOD 523776 * 2 <= 523776` THEN ASM_REWRITE_TAC[] THENL
+  [REWRITE_TAC[cmod] THEN ASM_REWRITE_TAC[] THEN
+   ASM_CASES_TAC `r DIV 523776 = 16` THEN ASM_REWRITE_TAC[] THENL
+   [SUBGOAL_THEN `&r - &(r MOD 523776) = &8380416 : int` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC;
+    SUBGOAL_THEN `~(&r - &(r MOD 523776) = &8380416 : int)` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC];
+   REWRITE_TAC[cmod] THEN ASM_REWRITE_TAC[] THEN
+   ASM_CASES_TAC `r DIV 523776 + 1 = 16` THEN ASM_REWRITE_TAC[] THENL
+   [SUBGOAL_THEN `&r - (&(r MOD 523776) - &523776) = &8380416 : int` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC;
+    SUBGOAL_THEN `~(&r - (&(r MOD 523776) - &523776) = &8380416 : int)` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC]]);;
+
+let DECOMPOSE32_A1_BOUND = prove(
+ `!r. r < 8380417 ==> FST(decompose32 r) <= 15`,
+  GEN_TAC THEN DISCH_TAC THEN
+  REWRITE_TAC[DECOMPOSE32_EXPAND; cmod; LET_DEF; LET_END_DEF; FST] THEN
+  MP_TAC(SPECL [`r:num`; `523776`] DIVISION) THEN
+  ANTS_TAC THENL [ARITH_TAC; STRIP_TAC] THEN
+  ASM_CASES_TAC `r MOD 523776 * 2 <= 523776` THEN
+  ASM_REWRITE_TAC[] THEN
+  COND_CASES_TAC THEN ASM_ARITH_TAC);;
+
+let DECOMPOSE32_A0_BOUND = prove(
+ `!r. r < 8380417 ==>
+       -- &261888 <= SND(decompose32 r) /\ SND(decompose32 r) <= &261888`,
+  GEN_TAC THEN DISCH_TAC THEN
+  REWRITE_TAC[DECOMPOSE32_EXPAND; cmod; LET_DEF; LET_END_DEF] THEN
+  MP_TAC(SPECL [`r:num`; `523776`] DIVISION) THEN
+  ANTS_TAC THENL [ARITH_TAC; STRIP_TAC] THEN
+  ASM_CASES_TAC `r MOD 523776 * 2 <= 523776` THEN ASM_REWRITE_TAC[] THENL
+  [(* Case 1: MOD*2 <= 523776 *)
+   ASM_CASES_TAC `r DIV 523776 = 16` THEN ASM_REWRITE_TAC[SND] THENL
+   [(* 1a: wrap *)
+    SUBGOAL_THEN `r MOD 523776 = 0` SUBST1_TAC THENL
+    [ASM_ARITH_TAC; CONV_TAC INT_REDUCE_CONV];
+    (* 1b: no wrap *)
+    MP_TAC(SPEC `r MOD 523776` INT_POS) THEN
+    ASM_REWRITE_TAC[INT_OF_NUM_LE] THEN ASM_ARITH_TAC];
+   (* Case 2: MOD*2 > 523776 *)
+   ASM_CASES_TAC `r DIV 523776 + 1 = 16` THEN ASM_REWRITE_TAC[SND] THENL
+   [(* 2a: wrap *)
+    SUBGOAL_THEN `&261888 < &(r MOD 523776) : int /\ &(r MOD 523776) < &523776 : int` MP_TAC THENL
+    [REWRITE_TAC[INT_OF_NUM_LT] THEN ASM_ARITH_TAC; INT_ARITH_TAC];
+    (* 2b: no wrap *)
+    SUBGOAL_THEN `&261888 < &(r MOD 523776) : int /\ &(r MOD 523776) < &523776 : int` MP_TAC THENL
+    [REWRITE_TAC[INT_OF_NUM_LT] THEN ASM_ARITH_TAC; INT_ARITH_TAC]]]);;
+
+let DECOMPOSE32_A1_MAP_BOUND = prove(
+ `!l. ALL (\x. x < 8380417) l
+      ==> ALL (\x. x <= 15) (MAP (FST o decompose32) l)`,
+  LIST_INDUCT_TAC THEN REWRITE_TAC[ALL; MAP; o_THM] THEN
+  STRIP_TAC THEN CONJ_TAC THENL
+  [MATCH_MP_TAC DECOMPOSE32_A1_BOUND THEN ASM_REWRITE_TAC[];
+   FIRST_X_ASSUM MATCH_MP_TAC THEN ASM_REWRITE_TAC[]]);;
+
+let DECOMPOSE32_A0_MAP_BOUND = prove(
+ `!l. ALL (\x. x < 8380417) l
+      ==> ALL (\x. -- &261888 <= x /\ x <= &261888) (MAP (SND o decompose32) l)`,
+  LIST_INDUCT_TAC THEN REWRITE_TAC[ALL; MAP; o_THM] THEN
+  STRIP_TAC THEN CONJ_TAC THENL
+  [MATCH_MP_TAC DECOMPOSE32_A0_BOUND THEN ASM_REWRITE_TAC[];
+   FIRST_X_ASSUM MATCH_MP_TAC THEN ASM_REWRITE_TAC[]]);;
+
+(* --- decompose88 lemmas --- *)
+
+(* Equivalence to MOD/DIV form, used in bound proofs *)
+let DECOMPOSE88_EXPAND = prove(
+ `!r. decompose88 r =
+    let r0 = cmod r 190464 in
+    let h = if r MOD 190464 * 2 <= 190464
+            then r DIV 190464
+            else r DIV 190464 + 1 in
+    if h = 44 then (0, r0 - &1)
+    else (h, r0)`,
+  GEN_TAC THEN REWRITE_TAC[decompose88; LET_DEF; LET_END_DEF] THEN
+  MP_TAC(SPECL [`r:num`; `190464`] CMOD_HIGHBITS) THEN
+  ANTS_TAC THENL [ARITH_TAC; DISCH_TAC] THEN
+  MP_TAC(SPECL [`r:num`; `190464`] DIVISION) THEN
+  ANTS_TAC THENL [ARITH_TAC; STRIP_TAC] THEN
+  ASM_CASES_TAC `r MOD 190464 * 2 <= 190464` THEN ASM_REWRITE_TAC[] THENL
+  [REWRITE_TAC[cmod] THEN ASM_REWRITE_TAC[] THEN
+   ASM_CASES_TAC `r DIV 190464 = 44` THEN ASM_REWRITE_TAC[] THENL
+   [SUBGOAL_THEN `&r - &(r MOD 190464) = &8380416 : int` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC;
+    SUBGOAL_THEN `~(&r - &(r MOD 190464) = &8380416 : int)` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC];
+   REWRITE_TAC[cmod] THEN ASM_REWRITE_TAC[] THEN
+   ASM_CASES_TAC `r DIV 190464 + 1 = 44` THEN ASM_REWRITE_TAC[] THENL
+   [SUBGOAL_THEN `&r - (&(r MOD 190464) - &190464) = &8380416 : int` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC;
+    SUBGOAL_THEN `~(&r - (&(r MOD 190464) - &190464) = &8380416 : int)` (fun th -> REWRITE_TAC[th]) THEN
+    REWRITE_TAC[INT_OF_NUM_EQ] THEN ASM_ARITH_TAC]]);;
+
+let DECOMPOSE88_A1_BOUND = prove(
+ `!r. r < 8380417 ==> FST(decompose88 r) <= 43`,
+  GEN_TAC THEN DISCH_TAC THEN
+  REWRITE_TAC[DECOMPOSE88_EXPAND; cmod; LET_DEF; LET_END_DEF; FST] THEN
+  MP_TAC(SPECL [`r:num`; `190464`] DIVISION) THEN
+  ANTS_TAC THENL [ARITH_TAC; STRIP_TAC] THEN
+  ASM_CASES_TAC `r MOD 190464 * 2 <= 190464` THEN
+  ASM_REWRITE_TAC[] THEN
+  COND_CASES_TAC THEN ASM_ARITH_TAC);;
+
+let DECOMPOSE88_A0_BOUND = prove(
+ `!r. r < 8380417 ==>
+       -- &95232 <= SND(decompose88 r) /\ SND(decompose88 r) <= &95232`,
+  GEN_TAC THEN DISCH_TAC THEN
+  REWRITE_TAC[DECOMPOSE88_EXPAND; cmod; LET_DEF; LET_END_DEF] THEN
+  MP_TAC(SPECL [`r:num`; `190464`] DIVISION) THEN
+  ANTS_TAC THENL [ARITH_TAC; STRIP_TAC] THEN
+  ASM_CASES_TAC `r MOD 190464 * 2 <= 190464` THEN ASM_REWRITE_TAC[] THENL
+  [(* Case 1: MOD*2 <= 190464 *)
+   ASM_CASES_TAC `r DIV 190464 = 44` THEN ASM_REWRITE_TAC[SND] THENL
+   [(* 1a: wrap *)
+    SUBGOAL_THEN `r MOD 190464 = 0` SUBST1_TAC THENL
+    [ASM_ARITH_TAC; CONV_TAC INT_REDUCE_CONV];
+    (* 1b: no wrap *)
+    MP_TAC(SPEC `r MOD 190464` INT_POS) THEN
+    ASM_REWRITE_TAC[INT_OF_NUM_LE] THEN ASM_ARITH_TAC];
+   (* Case 2: MOD*2 > 190464 *)
+   ASM_CASES_TAC `r DIV 190464 + 1 = 44` THEN ASM_REWRITE_TAC[SND] THENL
+   [(* 2a: wrap *)
+    SUBGOAL_THEN `&95232 < &(r MOD 190464) : int /\ &(r MOD 190464) < &190464 : int` MP_TAC THENL
+    [REWRITE_TAC[INT_OF_NUM_LT] THEN ASM_ARITH_TAC; INT_ARITH_TAC];
+    (* 2b: no wrap *)
+    SUBGOAL_THEN `&95232 < &(r MOD 190464) : int /\ &(r MOD 190464) < &190464 : int` MP_TAC THENL
+    [REWRITE_TAC[INT_OF_NUM_LT] THEN ASM_ARITH_TAC; INT_ARITH_TAC]]]);;
+
+let DECOMPOSE88_A1_MAP_BOUND = prove(
+ `!l. ALL (\x. x < 8380417) l
+      ==> ALL (\x. x <= 43) (MAP (FST o decompose88) l)`,
+  LIST_INDUCT_TAC THEN REWRITE_TAC[ALL; MAP; o_THM] THEN
+  STRIP_TAC THEN CONJ_TAC THENL
+  [MATCH_MP_TAC DECOMPOSE88_A1_BOUND THEN ASM_REWRITE_TAC[];
+   FIRST_X_ASSUM MATCH_MP_TAC THEN ASM_REWRITE_TAC[]]);;
+
+let DECOMPOSE88_A0_MAP_BOUND = prove(
+ `!l. ALL (\x. x < 8380417) l
+      ==> ALL (\x. -- &95232 <= x /\ x <= &95232) (MAP (SND o decompose88) l)`,
+  LIST_INDUCT_TAC THEN REWRITE_TAC[ALL; MAP; o_THM] THEN
+  STRIP_TAC THEN CONJ_TAC THENL
+  [MATCH_MP_TAC DECOMPOSE88_A0_BOUND THEN ASM_REWRITE_TAC[];
+   FIRST_X_ASSUM MATCH_MP_TAC THEN ASM_REWRITE_TAC[]]);;
+
+(* ========================================================================= *)
 (* zunpack: gamma1 - x unpacking for polyz                                   *)
 (*                                                                           *)
 (* zunpack_d maps a d-bit packed coefficient x in [0, 2^d - 1] to           *)

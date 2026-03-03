@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772505758451,
+  "lastUpdate": 1772534779829,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -214362,6 +214362,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 94219,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rodchap@amazon.com",
+            "name": "Rod Chapman",
+            "username": "rod-chapman"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "8b11739463aa9e55d4974fba5b55db2679e1ba36",
+          "message": "Correct operator precedence in ensures clause of mld_caddq()\n\nOperator == binds more tightly than ternary ? : so\nparentheses are needed here to ensure correctness\nand readability.\n\nSigned-off-by: Rod Chapman <rodchap@amazon.com>",
+          "timestamp": "2026-03-03T18:43:04+08:00",
+          "tree_id": "54905a6c39483e62e088e2d147d97676d9a5d3ce",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/8b11739463aa9e55d4974fba5b55db2679e1ba36"
+        },
+        "date": 1772534708917,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 35344,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 119747,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 38042,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 60735,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 200656,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 62670,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 92949,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 232242,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 94700,
             "unit": "cycles"
           }
         ]

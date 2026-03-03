@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772548865563,
+  "lastUpdate": 1772548869935,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -168619,6 +168619,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 154600,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "4398820258860fa7894dc1d45a0a626e5dd93f18",
+          "message": "CI: Disable benchmarking CI on self hosted boards\n\nDue to relocation, we have to temporarily disable CI that is running on most\nof our self-hosted runners:\n - Arm Cortex-A72 (Raspberry Pi 4)\n - Arm Cortex-A55 (Snapdragon 888)\n - SpacemiT K1 8 (Banana Pi F3)\n -  Mac Mini (M1, 2020)\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-03-03T14:36:51Z",
+          "tree_id": "e7660c3ef8a2bc7b491a8913677f27de38f31f6c",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/4398820258860fa7894dc1d45a0a626e5dd93f18"
+        },
+        "date": 1772548762163,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 56146,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 181359,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 61120,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 98623,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 298711,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 100220,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 152921,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 355274,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 154858,
             "unit": "cycles"
           }
         ]

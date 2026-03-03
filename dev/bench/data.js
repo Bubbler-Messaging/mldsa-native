@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772544343103,
+  "lastUpdate": 1772544362707,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -191594,6 +191594,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 196104,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rodchap@amazon.com",
+            "name": "Rod Chapman",
+            "username": "rod-chapman"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "08e63cc0d4b1491a09f608f4876758abd3f86fa7",
+          "message": "Correct assertion in polyveck_add()\n\nIt was previously asserting the correct range on values in\nu->vec in the range 0 .. <MLDSA_L, but this should be\n0 .. <MLDSA_K.\n\nSince MLDSA_L <= MLDSA_K for all parameter sets, this passes\nproof and runtime checking, but is weak.\n\nThe loop-invariant and post-condition of this function\nare correct, so proof of calling units is not affected.\n\nSigned-off-by: Rod Chapman <rodchap@amazon.com>",
+          "timestamp": "2026-03-03T13:22:06Z",
+          "tree_id": "023e1aef6fa62e21274df66c0a231ec2e045f24f",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/08e63cc0d4b1491a09f608f4876758abd3f86fa7"
+        },
+        "date": 1772544281386,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 69142,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 188240,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 69307,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 119890,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 300478,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 115515,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 204105,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 396282,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 195920,
             "unit": "cycles"
           }
         ]

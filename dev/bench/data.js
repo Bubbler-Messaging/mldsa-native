@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772610991015,
+  "lastUpdate": 1772610994413,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -355938,6 +355938,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 194375,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rodchap@amazon.com",
+            "name": "Rod Chapman",
+            "username": "rod-chapman"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "339e496e27c151c3609614ec84a667002f34bfdc",
+          "message": "CBMC: Correct contract and naming of mld_poly_chknorm_native()\n\n- Fix ensures clause to account for all three return values (-1, 0, 1)\n  and make the stronger postcondition conditional on non-fallback.\n- Use mld_ct_cmask_nonzero_u32() in mld_poly_chknorm() caller.\n- Rename REDUCE32_RANGE_MAX to MLD_REDUCE32_RANGE_MAX.\n- Fix stale comments referencing ntt.h instead of poly.h.\n\nSigned-off-by: Rod Chapman <rodchap@amazon.com>",
+          "timestamp": "2026-03-04T15:52:02+08:00",
+          "tree_id": "9a9c9532319d46c20f98febf63170d115e25c388",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/339e496e27c151c3609614ec84a667002f34bfdc"
+        },
+        "date": 1772610899701,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 68196,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 201973,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 70544,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 121006,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 331382,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 118067,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 198246,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 426898,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 194357,
             "unit": "cycles"
           }
         ]

@@ -165,6 +165,8 @@ jobs:
             needs: ["mldsa_specs.ml", "mldsa_utils.ml", "mldsa_zetas.ml"]
           - name: mldsa_intt
             needs: ["mldsa_specs.ml", "mldsa_utils.ml", "mldsa_zetas.ml"]
+          - name: keccak_f1600_x4_avx2
+            needs: ["keccak_utils.ml", "keccak_spec.ml", "keccak_f1600_x4_avx2_constants.ml", "keccak_constants.ml"]
     name: x86_64 HOL Light proof for ${{ matrix.proof.name }}.S
     runs-on: pqcp-x64
     if: github.repository_owner == 'pq-code-package' && !github.event.pull_request.head.repo.fork

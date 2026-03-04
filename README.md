@@ -65,6 +65,7 @@ HOL-Light functional correctness proofs can be found in [proofs/hol_light](proof
 
 - AArch64 poly_caddq [poly_caddq_asm.S](mldsa/src/native/aarch64/src/poly_caddq_asm.S)
 - x86_64 NTT [ntt.S](mldsa/src/native/x86_64/src/ntt.S)
+- x86_64 4-fold Keccak-F1600 using AVX2 [keccak_f1600_x4_avx2.S](mldsa/src/fips202/native/x86_64/src/keccak_f1600_x4_avx2.S)
 
 These proofs utilize the verification infrastructure in [s2n-bignum](https://github.com/awslabs/s2n-bignum).
 

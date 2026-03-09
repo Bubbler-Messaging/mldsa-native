@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1773096349811,
+  "lastUpdate": 1773096378889,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -427623,6 +427623,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 402628,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "521f3bb1dd19291e936a9156d6901021ee84be91",
+          "message": "AArch64: Support unaligned inputs for top-level APIs\n\npolyz_unpack_{17,19}_asm are the only AArch64 assembly routines that\nload from potentially unaligned user-provided buffers (the signature\npassed to verify). All other assembly (NTT, rej_uniform, etc.) operates\non aligned internal buffers.\n\nThe ld1 with .4s/.2d element sizes and the ldr s/d instructions used\nhere require 4/8-byte alignment on Device memory (bare-metal AArch64\nwithout MMU). Replace with .16b element sizes and ld1 {v.8b}, which\ndo not require alignment.\n\nWith this fixed, remove the MLD_TEST_NO_UNALIGNED workaround from the\naarch64-virt baremetal platform so the unaligned-buffer functional test\nruns on baremetal as well.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@kannwischer.eu>",
+          "timestamp": "2026-03-10T06:40:55+08:00",
+          "tree_id": "1ad615ace70e041205e550b964a34f324b57efe2",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/521f3bb1dd19291e936a9156d6901021ee84be91"
+        },
+        "date": 1773096378323,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 138462,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 484015,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 162298,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 241341,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 792424,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 241216,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 396566,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1012408,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 402616,
             "unit": "cycles"
           }
         ]

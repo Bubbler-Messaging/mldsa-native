@@ -1307,9 +1307,7 @@ def gen_aarch64_hol_light_zeta_file():
         yield "]`;;"
         yield ""
 
-    update_file(
-        "proofs/hol_light/aarch64/proofs/mldsa_zetas.ml", "\n".join(gen())
-    )
+    update_file("proofs/hol_light/aarch64/proofs/mldsa_zetas.ml", "\n".join(gen()))
 
 
 def gen_avx2_hol_light_zeta_file():

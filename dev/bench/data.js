@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774072306144,
+  "lastUpdate": 1774072311457,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -240442,6 +240442,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 458802,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@zerorisc.com",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "bb07ee8da5a3ad04b6280edec110c6e67f41fc86",
+          "message": "AArch64: Fix buffer overread in aarch64 polyz_unpack_{17,19}\n\nThe 3-register ld1 {v0, v1, v2} loads 48 bytes but only 36 (polyz_unpack_17)\nor 40 (polyz_unpack_19) are needed, causing a 12/8-byte overread past the\ninput buffer on the last iteration. Split into a 2-register ld1 for\nthe first 32 bytes plus an overlapping 1-register ld1 for the remainder.\nThe TBL indices for v2 are adjusted to account for v2's shifted load\noffset\n\nSigned-off-by: Matthias J. Kannwischer <matthias@zerorisc.com>",
+          "timestamp": "2026-03-21T13:47:16+08:00",
+          "tree_id": "1e948369f087f75cbb1f2a48965b981f7f8bb81d",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/bb07ee8da5a3ad04b6280edec110c6e67f41fc86"
+        },
+        "date": 1774072310395,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 157591,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 551560,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 169402,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 267815,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 904542,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 274303,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 448249,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1156908,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 458389,
             "unit": "cycles"
           }
         ]

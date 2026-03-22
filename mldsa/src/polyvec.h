@@ -154,7 +154,7 @@ typedef struct
 #endif
 } mld_polymat;
 
-/* Secret vector s1, see mld_s1vec_init and mld_s1vec_get_poly below */
+/* s1 vector in NTT domain, either precomputed or generated on demand */
 typedef struct
 {
 #if defined(MLD_CONFIG_REDUCE_RAM)
@@ -164,7 +164,7 @@ typedef struct
 #endif
 } mld_s1vec;
 
-/* Secret vector s2, see mld_s2vec_init and mld_s2vec_get_poly below */
+/* s2 vector in NTT domain, either precomputed or generated on demand */
 typedef struct
 {
 #if defined(MLD_CONFIG_REDUCE_RAM)
@@ -174,7 +174,7 @@ typedef struct
 #endif
 } mld_s2vec;
 
-/* Secret vector t0, see mld_t0vec_init and mld_t0vec_get_poly below */
+/* t0 vector in NTT domain, either precomputed or generated on demand */
 typedef struct
 {
 #if defined(MLD_CONFIG_REDUCE_RAM)
@@ -632,6 +632,17 @@ static MLD_INLINE void mld_s1vec_init(
 }
 
 #define mld_s1vec_get_poly MLD_NAMESPACE_KL(s1vec_get_poly)
+/*************************************************
+ * Name:        mld_s1vec_get_poly
+ *
+ * Description: Get polynomial i of s1 in NTT domain.
+ *              In normal mode, copies from the precomputed vector.
+ *              In REDUCE_RAM mode, unpacks and NTTs on demand.
+ *
+ * Arguments:   - mld_poly *buf: output buffer for the polynomial
+ *              - const mld_s1vec *s1: pointer to s1 vector
+ *              - unsigned int i: index of polynomial (0 <= i < MLDSA_L)
+ **************************************************/
 static MLD_INLINE void mld_s1vec_get_poly(mld_poly *buf, const mld_s1vec *s1,
                                           unsigned int i)
 {
@@ -710,6 +721,17 @@ static MLD_INLINE void mld_s2vec_init(
 }
 
 #define mld_s2vec_get_poly MLD_NAMESPACE_KL(s2vec_get_poly)
+/*************************************************
+ * Name:        mld_s2vec_get_poly
+ *
+ * Description: Get polynomial i of s2 in NTT domain.
+ *              In normal mode, copies from the precomputed vector.
+ *              In REDUCE_RAM mode, unpacks and NTTs on demand.
+ *
+ * Arguments:   - mld_poly *buf: output buffer for the polynomial
+ *              - const mld_s2vec *s2: pointer to s2 vector
+ *              - unsigned int i: index of polynomial (0 <= i < MLDSA_K)
+ **************************************************/
 static MLD_INLINE void mld_s2vec_get_poly(mld_poly *buf, const mld_s2vec *s2,
                                           unsigned int i)
 {
@@ -766,6 +788,17 @@ static MLD_INLINE void mld_t0vec_init(
 }
 
 #define mld_t0vec_get_poly MLD_NAMESPACE_KL(t0vec_get_poly)
+/*************************************************
+ * Name:        mld_t0vec_get_poly
+ *
+ * Description: Get polynomial i of t0 in NTT domain.
+ *              In normal mode, copies from the precomputed vector.
+ *              In REDUCE_RAM mode, unpacks and NTTs on demand.
+ *
+ * Arguments:   - mld_poly *buf: output buffer for the polynomial
+ *              - const mld_t0vec *t0: pointer to t0 vector
+ *              - unsigned int i: index of polynomial (0 <= i < MLDSA_K)
+ **************************************************/
 static MLD_INLINE void mld_t0vec_get_poly(mld_poly *buf, const mld_t0vec *t0,
                                           unsigned int i)
 {

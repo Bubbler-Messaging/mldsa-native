@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774396216539,
+  "lastUpdate": 1774396226474,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -264521,6 +264521,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 110812,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dkostic@amazon.com",
+            "name": "dkostic",
+            "username": "dkostic"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "db65535319d9750d75d34c6d170677415f9d2c46",
+          "message": "Merge AArch64 and x86_64 mldsa_specs.ml into common/mldsa_specs.ml\n\nConsolidate the shared ML-DSA specifications and congruence/bounds\npropagation infrastructure into a single file at\nproofs/hol_light/common/mldsa_specs.ml, used by both AArch64 and\nx86_64 proofs.\n\nThe merged file contains:\n- Shared: bitreverse8, reorder, BITREVERSE8_CLAUSES, congruence/bounds\n  infrastructure (CONGBOUND_WORD_*, ASM_CONGBOUND_RULE, etc.), SIMD\n  simplification tactics\n- x86_64-specific: AVX2 NTT ordering, mldsa_montred/barred/montmul\n- AArch64-specific: arm_mldsa_forward_ntt, arm_mldsa_barmul\n\nASM_CONGBOUND_RULE now handles both arm_mldsa_barmul and\nmldsa_montred/barred/montmul cases.\n\nSigned-off-by: dkostic <dkostic@amazon.com>",
+          "timestamp": "2026-03-25T07:45:56+08:00",
+          "tree_id": "1fc952a8ae7ed760438e0aaa93ecaa5b3826913e",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/db65535319d9750d75d34c6d170677415f9d2c46"
+        },
+        "date": 1774396149963,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 42279,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 132300,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 43971,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 76769,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 217452,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 73895,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 108025,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 252354,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 109188,
             "unit": "cycles"
           }
         ]

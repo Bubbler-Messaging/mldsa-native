@@ -261,8 +261,8 @@
 #undef mld_pack_sig_h_poly
 #undef mld_pack_sig_z
 #undef mld_pack_sk
+#undef mld_unpack_hints
 #undef mld_unpack_pk
-#undef mld_unpack_sig
 #undef mld_unpack_sk
 /* mldsa/src/params.h */
 #undef MLDSA_BETA

@@ -21,8 +21,9 @@ PROJECT_SOURCES += $(SRCDIR)/mldsa/src/sign.c
 
 CHECK_FUNCTION_CONTRACTS=mld_verify_internal
 USE_FUNCTION_CONTRACTS=mld_unpack_pk
-USE_FUNCTION_CONTRACTS+=mld_unpack_sig
+USE_FUNCTION_CONTRACTS+=mld_polyvecl_unpack_z
 USE_FUNCTION_CONTRACTS+=mld_polyvecl_chknorm
+USE_FUNCTION_CONTRACTS+=mld_unpack_hints
 USE_FUNCTION_CONTRACTS+=mld_H
 USE_FUNCTION_CONTRACTS+=mld_poly_challenge
 USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_expand

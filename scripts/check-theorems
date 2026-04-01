@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Copyright (c) The mldsa-native project authors
+# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+
+# Verify that every proof contains the expected set of theorems.
+
+set -euo pipefail
+
+usage()
+{
+  echo "Usage: $0 <architecture>" >&2
+  echo "  architecture: aarch64 | x86_64" >&2
+  exit 1
+}
+
+[[ $# -eq 1 ]] || usage
+ARCH="$1"
+
+case "$ARCH" in
+  aarch64 | x86_64) ;;
+  *)
+    echo "ERROR: Unknown architecture '$ARCH'." >&2
+    usage
+    ;;
+esac
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROOFS_DIR="$SCRIPT_DIR/../proofs/hol_light/$ARCH/proofs"
+
+PROOFS="$(tests hol_light -l -a "$ARCH")"
+ERRORS=0
+
+for routine in $PROOFS; do
+  suffixes=("CORRECT" "SAFE" "SUBROUTINE_SAFE")
+  [[ $ARCH == "x86_64" ]] && suffixes+=("SUBROUTINE_CORRECT" "NOIBT_SUBROUTINE_CORRECT" "NOIBT_SUBROUTINE_SAFE")
+
+  for sfx in "${suffixes[@]}"; do
+    if ! grep -q "_${sfx}" "$PROOFS_DIR/${routine}.ml"; then
+      echo "FAIL: ${routine}_${sfx} not found in ${routine}.ml" >&2
+      ((ERRORS++)) || true
+    fi
+  done
+done
+
+[[ $ERRORS -eq 0 ]] && echo "OK" || exit 1

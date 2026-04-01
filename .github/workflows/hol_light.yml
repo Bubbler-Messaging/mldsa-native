@@ -41,12 +41,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Check that all proofs provide the expected theorems.
+  hol_light_check_structure:
+    strategy:
+      fail-fast: true
+      matrix:
+        arch: [aarch64, x86_64]
+        include:
+          - arch: aarch64
+            runs-on: pqcp-arm64
+          - arch: x86_64
+            runs-on: pqcp-x64
+    name: HOL-Light theorem structure check for ${{ matrix.arch }}
+    runs-on: ${{ matrix.runs-on }}
+    if: github.repository_owner == 'pq-code-package' && !github.event.pull_request.head.repo.fork
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-shell
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          nix-shell: 'hol_light'
+          script: |
+            scripts/check-theorems ${{ matrix.arch }}
   # The proofs also check that the byte code is up to date,
   # but we use this as a fast path to not even start the proofs
   # if the byte code needs updating.
   hol_light_bytecode:
     name: AArch64 HOL-Light bytecode check
     runs-on: pqcp-arm64
+    needs: [ hol_light_check_structure ]
     if: github.repository_owner == 'pq-code-package' && !github.event.pull_request.head.repo.fork
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -131,6 +156,7 @@ jobs:
   hol_light_bytecode_x86_64:
     name: x86_64 HOL-Light bytecode check
     runs-on: pqcp-x64
+    needs: [ hol_light_check_structure ]
     if: github.repository_owner == 'pq-code-package' && !github.event.pull_request.head.repo.fork
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

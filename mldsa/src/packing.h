@@ -6,6 +6,7 @@
 #define MLD_PACKING_H
 
 #include "polyvec.h"
+#include "polyvec_lazy.h"
 
 #define mld_pack_pk MLD_NAMESPACE_KL(pack_pk)
 /*************************************************

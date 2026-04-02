@@ -344,15 +344,35 @@
 #undef mld_polyvecl_uniform_gamma1
 #undef mld_polyvecl_unpack_eta
 #undef mld_polyvecl_unpack_z
+/* mldsa/src/polyvec_lazy.h */
+#undef MLD_POLYVEC_LAZY_H
 #undef mld_s1vec
+#undef mld_s1vec_eager
 #undef mld_s1vec_get_poly
+#undef mld_s1vec_get_poly_eager
+#undef mld_s1vec_get_poly_lazy
 #undef mld_s1vec_init
+#undef mld_s1vec_init_eager
+#undef mld_s1vec_init_lazy
+#undef mld_s1vec_lazy
 #undef mld_s2vec
+#undef mld_s2vec_eager
 #undef mld_s2vec_get_poly
+#undef mld_s2vec_get_poly_eager
+#undef mld_s2vec_get_poly_lazy
 #undef mld_s2vec_init
+#undef mld_s2vec_init_eager
+#undef mld_s2vec_init_lazy
+#undef mld_s2vec_lazy
 #undef mld_t0vec
+#undef mld_t0vec_eager
 #undef mld_t0vec_get_poly
+#undef mld_t0vec_get_poly_eager
+#undef mld_t0vec_get_poly_lazy
 #undef mld_t0vec_init
+#undef mld_t0vec_init_eager
+#undef mld_t0vec_init_lazy
+#undef mld_t0vec_lazy
 /* mldsa/src/rounding.h */
 #undef MLD_2_POW_D
 #undef MLD_ROUNDING_H

@@ -17,9 +17,6 @@
 #define mld_polyvecl MLD_ADD_PARAM_SET(mld_polyvecl)
 #define mld_polyveck MLD_ADD_PARAM_SET(mld_polyveck)
 #define mld_polymat MLD_ADD_PARAM_SET(mld_polymat)
-#define mld_s1vec MLD_ADD_PARAM_SET(mld_s1vec)
-#define mld_s2vec MLD_ADD_PARAM_SET(mld_s2vec)
-#define mld_t0vec MLD_ADD_PARAM_SET(mld_t0vec)
 /* End of parameter set namespacing */
 
 /* Vectors of polynomials of length MLDSA_L */
@@ -153,36 +150,6 @@ typedef struct
   mld_polyvecl vec[MLDSA_K];
 #endif
 } mld_polymat;
-
-/* s1 vector in NTT domain, either precomputed or generated on demand */
-typedef struct
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  const uint8_t *packed;
-#else
-  mld_polyvecl vec;
-#endif
-} mld_s1vec;
-
-/* s2 vector in NTT domain, either precomputed or generated on demand */
-typedef struct
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  const uint8_t *packed;
-#else
-  mld_polyveck vec;
-#endif
-} mld_s2vec;
-
-/* t0 vector in NTT domain, either precomputed or generated on demand */
-typedef struct
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  const uint8_t *packed;
-#else
-  mld_polyveck vec;
-#endif
-} mld_t0vec;
 
 #define mld_polyveck_reduce MLD_NAMESPACE_KL(polyveck_reduce)
 /*************************************************
@@ -609,51 +576,6 @@ __contract__(
     array_bound(p->vec[k1].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
 );
 
-#define mld_s1vec_init MLD_NAMESPACE_KL(s1vec_init)
-/*************************************************
- * Name:        mld_s1vec_init
- *
- * Description: Initialize s1 vector from packed secret key data.
- *              In normal mode, unpacks and NTTs the full vector.
- *              In REDUCE_RAM mode, borrows packed_s1 for on-demand use.
- *
- * Arguments:   - mld_s1vec *s1: pointer to s1 vector to initialize
- *              - const uint8_t *packed_s1: pointer to packed s1 data in SK
- **************************************************/
-static MLD_INLINE void mld_s1vec_init(
-    mld_s1vec *s1, const uint8_t packed_s1[MLDSA_L * MLDSA_POLYETA_PACKEDBYTES])
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  s1->packed = packed_s1;
-#else
-  mld_polyvecl_unpack_eta(&s1->vec, packed_s1);
-  mld_polyvecl_ntt(&s1->vec);
-#endif
-}
-
-#define mld_s1vec_get_poly MLD_NAMESPACE_KL(s1vec_get_poly)
-/*************************************************
- * Name:        mld_s1vec_get_poly
- *
- * Description: Get polynomial i of s1 in NTT domain.
- *              In normal mode, copies from the precomputed vector.
- *              In REDUCE_RAM mode, unpacks and NTTs on demand.
- *
- * Arguments:   - mld_poly *buf: output buffer for the polynomial
- *              - const mld_s1vec *s1: pointer to s1 vector
- *              - unsigned int i: index of polynomial (0 <= i < MLDSA_L)
- **************************************************/
-static MLD_INLINE void mld_s1vec_get_poly(mld_poly *buf, const mld_s1vec *s1,
-                                          unsigned int i)
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  mld_polyeta_unpack(buf, s1->packed + i * MLDSA_POLYETA_PACKEDBYTES);
-  mld_poly_ntt(buf);
-#else
-  *buf = s1->vec.vec[i];
-#endif
-}
-
 #define mld_polyvecl_unpack_z MLD_NAMESPACE_KL(polyvecl_unpack_z)
 /*************************************************
  * Name:        mld_polyvecl_unpack_z
@@ -698,51 +620,6 @@ __contract__(
     array_bound(p->vec[k1].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
 );
 
-#define mld_s2vec_init MLD_NAMESPACE_KL(s2vec_init)
-/*************************************************
- * Name:        mld_s2vec_init
- *
- * Description: Initialize s2 vector from packed secret key data.
- *              In normal mode, unpacks and NTTs the full vector.
- *              In REDUCE_RAM mode, borrows packed_s2 for on-demand use.
- *
- * Arguments:   - mld_s2vec *s2: pointer to s2 vector to initialize
- *              - const uint8_t *packed_s2: pointer to packed s2 data in SK
- **************************************************/
-static MLD_INLINE void mld_s2vec_init(
-    mld_s2vec *s2, const uint8_t packed_s2[MLDSA_K * MLDSA_POLYETA_PACKEDBYTES])
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  s2->packed = packed_s2;
-#else
-  mld_polyveck_unpack_eta(&s2->vec, packed_s2);
-  mld_polyveck_ntt(&s2->vec);
-#endif
-}
-
-#define mld_s2vec_get_poly MLD_NAMESPACE_KL(s2vec_get_poly)
-/*************************************************
- * Name:        mld_s2vec_get_poly
- *
- * Description: Get polynomial i of s2 in NTT domain.
- *              In normal mode, copies from the precomputed vector.
- *              In REDUCE_RAM mode, unpacks and NTTs on demand.
- *
- * Arguments:   - mld_poly *buf: output buffer for the polynomial
- *              - const mld_s2vec *s2: pointer to s2 vector
- *              - unsigned int i: index of polynomial (0 <= i < MLDSA_K)
- **************************************************/
-static MLD_INLINE void mld_s2vec_get_poly(mld_poly *buf, const mld_s2vec *s2,
-                                          unsigned int i)
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  mld_polyeta_unpack(buf, s2->packed + i * MLDSA_POLYETA_PACKEDBYTES);
-  mld_poly_ntt(buf);
-#else
-  *buf = s2->vec.vec[i];
-#endif
-}
-
 #define mld_polyveck_unpack_t0 MLD_NAMESPACE_KL(polyveck_unpack_t0)
 /*************************************************
  * Name:        mld_polyveck_unpack_t0
@@ -765,50 +642,7 @@ __contract__(
     array_bound(p->vec[k1].coeffs, 0, MLDSA_N, -(1<<(MLDSA_D-1)) + 1, (1<<(MLDSA_D-1)) + 1)))
 );
 
-#define mld_t0vec_init MLD_NAMESPACE_KL(t0vec_init)
-/*************************************************
- * Name:        mld_t0vec_init
- *
- * Description: Initialize t0 vector from packed secret key data.
- *              In normal mode, unpacks and NTTs the full vector.
- *              In REDUCE_RAM mode, borrows packed_t0 for on-demand use.
- *
- * Arguments:   - mld_t0vec *t0: pointer to t0 vector to initialize
- *              - const uint8_t *packed_t0: pointer to packed t0 data in SK
- **************************************************/
-static MLD_INLINE void mld_t0vec_init(
-    mld_t0vec *t0, const uint8_t packed_t0[MLDSA_K * MLDSA_POLYT0_PACKEDBYTES])
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  t0->packed = packed_t0;
-#else
-  mld_polyveck_unpack_t0(&t0->vec, packed_t0);
-  mld_polyveck_ntt(&t0->vec);
-#endif
-}
 
-#define mld_t0vec_get_poly MLD_NAMESPACE_KL(t0vec_get_poly)
-/*************************************************
- * Name:        mld_t0vec_get_poly
- *
- * Description: Get polynomial i of t0 in NTT domain.
- *              In normal mode, copies from the precomputed vector.
- *              In REDUCE_RAM mode, unpacks and NTTs on demand.
- *
- * Arguments:   - mld_poly *buf: output buffer for the polynomial
- *              - const mld_t0vec *t0: pointer to t0 vector
- *              - unsigned int i: index of polynomial (0 <= i < MLDSA_K)
- **************************************************/
-static MLD_INLINE void mld_t0vec_get_poly(mld_poly *buf, const mld_t0vec *t0,
-                                          unsigned int i)
-{
-#if defined(MLD_CONFIG_REDUCE_RAM)
-  mld_polyt0_unpack(buf, t0->packed + i * MLDSA_POLYT0_PACKEDBYTES);
-  mld_poly_ntt(buf);
-#else
-  *buf = t0->vec.vec[i];
-#endif
-}
 
 #define mld_polymat_get_row MLD_NAMESPACE_KL(polymat_get_row)
 /*************************************************
@@ -847,8 +681,6 @@ __contract__(
   ensures(forall(k1, 0, MLDSA_K, forall(l1, 0, MLDSA_L,
     array_bound(mat->vec[k1].vec[l1].coeffs, 0, MLDSA_N, 0, MLDSA_Q))))
 );
-
-
 
 #define mld_polyvec_matrix_pointwise_montgomery \
   MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery)

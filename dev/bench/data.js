@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775115540572,
+  "lastUpdate": 1775115546060,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -359871,6 +359871,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 194635,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "andreas.hatziiliou@savoirfairelinux.com",
+            "name": "Andreas Hatziiliou",
+            "username": "L-series"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "90abb7187d2165679bda2b28974a8a3b84827794",
+          "message": "CI: lint: output errors\n\nThis commit accumulates the names of the checks which have failed while\nlinting and exposes them to the outer context window in order to guide\nthe user.\n\nSigned-off-by: Andreas Hatziiliou <andreas.hatziiliou@savoirfairelinux.com>",
+          "timestamp": "2026-04-02T15:34:40+08:00",
+          "tree_id": "6bc1e155c3e40919bcedd82445e9914fb96c1899",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/90abb7187d2165679bda2b28974a8a3b84827794"
+        },
+        "date": 1775115443404,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 68126,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 202567,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 70631,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 121189,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 332363,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 118198,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 198221,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 428066,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 194655,
             "unit": "cycles"
           }
         ]

@@ -26,6 +26,7 @@ USE_FUNCTION_CONTRACTS+=mld_polyveck_unpack_t0
 USE_FUNCTION_CONTRACTS+=mld_pack_pk
 USE_FUNCTION_CONTRACTS+=mld_polyvecl_chknorm
 USE_FUNCTION_CONTRACTS+=mld_polyveck_chknorm
+USE_FUNCTION_CONTRACTS+=mld_polyvecl_ntt
 USE_FUNCTION_CONTRACTS+=mld_compute_t0_t1_tr_from_sk_components
 USE_FUNCTION_CONTRACTS+=mld_value_barrier_u8
 USE_FUNCTION_CONTRACTS+=mld_ct_memcmp

@@ -215,7 +215,7 @@ MLD_MUST_CHECK_RETURN_VALUE
 static int mld_compute_t0_t1_tr_from_sk_components(
     mld_polyveck *t0, mld_polyveck *t1, uint8_t tr[MLDSA_TRBYTES],
     uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES], const uint8_t rho[MLDSA_SEEDBYTES],
-    const mld_polyvecl *s1, const mld_polyveck *s2,
+    const mld_polyvecl *s1hat, const mld_polyveck *s2,
     MLD_CONFIG_CONTEXT_PARAMETER_TYPE context)
 __contract__(
   requires(memory_no_alias(t0, sizeof(mld_polyveck)))
@@ -223,9 +223,9 @@ __contract__(
   requires(memory_no_alias(tr, MLDSA_TRBYTES))
   requires(memory_no_alias(pk, MLDSA_CRYPTO_PUBLICKEYBYTES))
   requires(memory_no_alias(rho, MLDSA_SEEDBYTES))
-  requires(memory_no_alias(s1, sizeof(mld_polyvecl)))
+  requires(memory_no_alias(s1hat, sizeof(mld_polyvecl)))
   requires(memory_no_alias(s2, sizeof(mld_polyveck)))
-  requires(forall(l0, 0, MLDSA_L, array_bound(s1->vec[l0].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
+  requires(forall(l0, 0, MLDSA_L, array_abs_bound(s1hat->vec[l0].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
   requires(forall(k0, 0, MLDSA_K, array_bound(s2->vec[k0].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
   assigns(memory_slice(t0, sizeof(mld_polyveck)))
   assigns(memory_slice(t1, sizeof(mld_polyveck)))
@@ -236,11 +236,10 @@ __contract__(
   ensures(return_value == 0 || return_value == MLD_ERR_OUT_OF_MEMORY))
 {
   int ret;
+  mld_polyveck *t = t0;
   MLD_ALLOC(mat, mld_polymat, 1, context);
-  MLD_ALLOC(s1hat, mld_polyvecl, 1, context);
-  MLD_ALLOC(t, mld_polyveck, 1, context);
 
-  if (mat == NULL || s1hat == NULL || t == NULL)
+  if (mat == NULL)
   {
     ret = MLD_ERR_OUT_OF_MEMORY;
     goto cleanup;
@@ -250,8 +249,6 @@ __contract__(
   mld_polyvec_matrix_expand(mat, rho);
 
   /* Matrix-vector multiplication */
-  *s1hat = *s1;
-  mld_polyvecl_ntt(s1hat);
   mld_polyvec_matrix_pointwise_montgomery(t, mat, s1hat);
   mld_polyveck_invntt_tomont(t);
 
@@ -281,8 +278,6 @@ __contract__(
 
 cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
-  MLD_FREE(t, mld_polyveck, 1, context);
-  MLD_FREE(s1hat, mld_polyvecl, 1, context);
   MLD_FREE(mat, mld_polymat, 1, context);
   return ret;
 }
@@ -296,16 +291,27 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
 {
   int ret;
   const uint8_t *rho, *rhoprime, *key;
+
+  /* TODO: Remove the following workaround for
+   * https://github.com/diffblue/cbmc/issues/8813 */
+  typedef MLD_UNION_OR_STRUCT
+  {
+    mld_polyveck t1;
+    mld_polyvecl s1;
+  }
+  s1_t1_u;
+  mld_polyvecl *s1;
+  mld_polyveck *t1;
+
   MLD_ALLOC(seedbuf, uint8_t, 2 * MLDSA_SEEDBYTES + MLDSA_CRHBYTES, context);
   MLD_ALLOC(inbuf, uint8_t, MLDSA_SEEDBYTES + 2, context);
   MLD_ALLOC(tr, uint8_t, MLDSA_TRBYTES, context);
-  MLD_ALLOC(s1, mld_polyvecl, 1, context);
+  MLD_ALLOC(s1_t1, s1_t1_u, 1, context);
   MLD_ALLOC(s2, mld_polyveck, 1, context);
-  MLD_ALLOC(t1, mld_polyveck, 1, context);
   MLD_ALLOC(t0, mld_polyveck, 1, context);
 
-  if (seedbuf == NULL || inbuf == NULL || tr == NULL || s1 == NULL ||
-      s2 == NULL || t1 == NULL || t0 == NULL)
+  if (seedbuf == NULL || inbuf == NULL || tr == NULL || s1_t1 == NULL ||
+      s2 == NULL || t0 == NULL)
   {
     ret = MLD_ERR_OUT_OF_MEMORY;
     goto cleanup;
@@ -324,10 +330,19 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   /* Constant time: rho is part of the public key and, hence, public. */
   MLD_CT_TESTING_DECLASSIFY(rho, MLDSA_SEEDBYTES);
 
+  s1 = &s1_t1->s1;
+  t1 = &s1_t1->t1;
+
   /* Sample s1 and s2 */
   mld_sample_s1_s2(s1, s2, rhoprime);
 
-  /* Compute t0, t1, tr, and pk from rho, s1, s2 */
+  /* Pack s1 into sk before NTT */
+  mld_pack_sk_s1(sk, s1);
+
+  /* NTT s1 in-place to use as s1hat */
+  mld_polyvecl_ntt(s1);
+
+  /* Compute t0, t1, tr, and pk from rho, s1hat, s2 */
   ret = mld_compute_t0_t1_tr_from_sk_components(t0, t1, tr, pk, rho, s1, s2,
                                                 context);
   if (ret != 0)
@@ -335,8 +350,8 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
     goto cleanup;
   }
 
-  /* Pack secret key */
-  mld_pack_sk(sk, rho, tr, key, t0, s1, s2);
+  /* Pack remaining secret key components */
+  mld_pack_sk_rho_key_tr_s2_t0(sk, rho, tr, key, t0, s2);
 
   /* Constant time: pk is the public key, inherently public data */
   MLD_CT_TESTING_DECLASSIFY(pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
@@ -344,9 +359,8 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
 cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
   MLD_FREE(t0, mld_polyveck, 1, context);
-  MLD_FREE(t1, mld_polyveck, 1, context);
   MLD_FREE(s2, mld_polyveck, 1, context);
-  MLD_FREE(s1, mld_polyvecl, 1, context);
+  MLD_FREE(s1_t1, s1_t1_u, 1, context);
   MLD_FREE(tr, uint8_t, MLDSA_TRBYTES, context);
   MLD_FREE(inbuf, uint8_t, MLDSA_SEEDBYTES + 2, context);
   MLD_FREE(seedbuf, uint8_t, 2 * MLDSA_SEEDBYTES + MLDSA_CRHBYTES, context);
@@ -1475,10 +1489,11 @@ int mld_sign_pk_from_sk(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   MLD_ALLOC(t0, mld_polyveck, 1, context);
   MLD_ALLOC(t0_computed, mld_polyveck, 1, context);
   MLD_ALLOC(t1, mld_polyveck, 1, context);
+  MLD_ALLOC(s1hat, mld_polyvecl, 1, context);
 
   if (rho == NULL || tr == NULL || tr_computed == NULL || key == NULL ||
       s1 == NULL || s2 == NULL || t0 == NULL || t0_computed == NULL ||
-      t1 == NULL)
+      t1 == NULL || s1hat == NULL)
   {
     ret = MLD_ERR_OUT_OF_MEMORY;
     goto cleanup;
@@ -1501,8 +1516,10 @@ int mld_sign_pk_from_sk(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   chk2 = mld_polyveck_chknorm(s2, MLDSA_ETA + 1) & 0xFF;
 
   /* Recompute t0, t1, tr, and pk from rho, s1, s2 */
+  *s1hat = *s1;
+  mld_polyvecl_ntt(s1hat);
   ret = mld_compute_t0_t1_tr_from_sk_components(t0_computed, t1, tr_computed,
-                                                pk, rho, s1, s2, context);
+                                                pk, rho, s1hat, s2, context);
   if (ret != 0)
   {
     goto cleanup;
@@ -1530,6 +1547,7 @@ cleanup:
   MLD_CT_TESTING_DECLASSIFY(pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
 
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
+  MLD_FREE(s1hat, mld_polyvecl, 1, context);
   MLD_FREE(t1, mld_polyveck, 1, context);
   MLD_FREE(t0_computed, mld_polyveck, 1, context);
   MLD_FREE(t0, mld_polyveck, 1, context);

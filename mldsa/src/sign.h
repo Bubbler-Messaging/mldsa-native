@@ -803,4 +803,20 @@ __contract__(
   assigns(memory_slice(pk, MLDSA_CRYPTO_PUBLICKEYBYTES))
   ensures(return_value == 0 || return_value == MLD_ERR_FAIL || return_value == MLD_ERR_OUT_OF_MEMORY)
 );
+#define mld_unpack_sk_and_ntt_s1_poly \
+  MLD_ADD_PARAM_SET(mld_unpack_sk_and_ntt_s1_poly)
+MLD_INTERNAL_API
+void mld_unpack_sk_and_ntt_s1_poly(
+    mld_poly *buf, const uint8_t sk[MLDSA_CRYPTO_SECRETKEYBYTES],
+    const mld_poly *cp, unsigned int i)
+__contract__(
+  requires(memory_no_alias(buf, sizeof(mld_poly)))
+  requires(memory_no_alias(sk, MLDSA_CRYPTO_SECRETKEYBYTES))
+  requires(memory_no_alias(cp, sizeof(mld_poly)))
+  requires(i < MLDSA_L)
+  requires(array_abs_bound(cp->coeffs, 0, MLDSA_N, MLD_NTT_BOUND))
+  assigns(memory_slice(buf, sizeof(mld_poly)))
+  ensures(array_abs_bound(buf->coeffs, 0, MLDSA_N, MLDSA_Q))
+);
+
 #endif /* !MLD_SIGN_H */

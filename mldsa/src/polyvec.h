@@ -678,8 +678,10 @@ __contract__(
   requires(memory_no_alias(mat, sizeof(mld_polymat)))
   requires(memory_no_alias(rho, MLDSA_SEEDBYTES))
   assigns(memory_slice(mat, sizeof(mld_polymat)))
+#if !defined(MLD_CONFIG_REDUCE_RAM)
   ensures(forall(k1, 0, MLDSA_K, forall(l1, 0, MLDSA_L,
     array_bound(mat->vec[k1].vec[l1].coeffs, 0, MLDSA_N, 0, MLDSA_Q))))
+#endif
 );
 
 #define mld_polyvec_matrix_pointwise_montgomery \
@@ -713,8 +715,10 @@ __contract__(
   requires(memory_no_alias(t, sizeof(mld_polyveck)))
   requires(memory_no_alias(mat, sizeof(mld_polymat)))
   requires(memory_no_alias(v, sizeof(mld_polyvecl)))
+#if !defined(MLD_CONFIG_REDUCE_RAM)
   requires(forall(k1, 0, MLDSA_K, forall(l1, 0, MLDSA_L,
                                          array_bound(mat->vec[k1].vec[l1].coeffs, 0, MLDSA_N, 0, MLDSA_Q))))
+#endif
   requires(forall(l1, 0, MLDSA_L,
                   array_abs_bound(v->vec[l1].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
   assigns(memory_slice(t, sizeof(mld_polyveck)))

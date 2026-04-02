@@ -57,6 +57,24 @@
   MLD_CONTEXT_PARAMETERS_7
 /* End of parameter set namespacing */
 
+#define mld_unpack_sk_and_ntt_s1_poly \
+  MLD_ADD_PARAM_SET(mld_unpack_sk_and_ntt_s1_poly)
+MLD_INTERNAL_API
+void mld_unpack_sk_and_ntt_s1_poly(
+    mld_poly *buf, const uint8_t sk[MLDSA_CRYPTO_SECRETKEYBYTES],
+    const mld_poly *cp, unsigned int i)
+{
+  uint8_t rho[MLDSA_SEEDBYTES];
+  uint8_t tr[MLDSA_TRBYTES];
+  uint8_t key[MLDSA_SEEDBYTES];
+  mld_poly tmp;
+  mld_s1vec s1;
+  mld_s2vec s2;
+  mld_t0vec t0;
+  mld_unpack_sk(rho, tr, key, &t0, &s1, &s2, sk);
+  mld_s1vec_get_poly(&tmp, &s1, i);
+  mld_poly_pointwise_montgomery(buf, cp, &tmp);
+}
 
 static int mld_check_pct(uint8_t const pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
                          uint8_t const sk[MLDSA_CRYPTO_SECRETKEYBYTES],
@@ -482,7 +500,9 @@ __contract__(
   requires(array_abs_bound(cp->coeffs, 0, MLDSA_N, MLD_NTT_BOUND))
   requires(forall(k0, 0, MLDSA_L,
     array_bound(y->vec[k0].coeffs, 0, MLDSA_N, -(MLDSA_GAMMA1 - 1), MLDSA_GAMMA1 + 1)))
+#if !defined(MLD_CONFIG_REDUCE_RAM)
   requires(forall(k1, 0, MLDSA_L, array_abs_bound(s1->vec.vec[k1].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+#endif
   assigns(memory_slice(sig, MLDSA_CRYPTO_BYTES))
   assigns(memory_slice(z, sizeof(mld_poly)))
   assigns(memory_slice(tmp, sizeof(mld_poly)))
@@ -563,7 +583,9 @@ __contract__(
   requires(memory_no_alias(s2, sizeof(mld_s2vec)))
   requires(memory_no_alias(tmp, sizeof(mld_poly)))
   requires(array_abs_bound(cp->coeffs, 0, MLDSA_N, MLD_NTT_BOUND))
+#if !defined(MLD_CONFIG_REDUCE_RAM)
   requires(forall(k0, 0, MLDSA_K, array_abs_bound(s2->vec.vec[k0].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+#endif
   assigns(memory_slice(h, sizeof(mld_polyveck)))
   assigns(memory_slice(tmp, sizeof(mld_poly)))
   ensures(forall(k1, 0, MLDSA_K, array_abs_bound(h->vec[k1].coeffs, 0, MLDSA_N, MLDSA_Q)))
@@ -605,7 +627,9 @@ __contract__(
   requires(memory_no_alias(t0, sizeof(mld_t0vec)))
   requires(memory_no_alias(tmp, sizeof(mld_poly)))
   requires(array_abs_bound(cp->coeffs, 0, MLDSA_N, MLD_NTT_BOUND))
+#if !defined(MLD_CONFIG_REDUCE_RAM)
   requires(forall(k0, 0, MLDSA_K, array_abs_bound(t0->vec.vec[k0].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+#endif
   assigns(memory_slice(h, sizeof(mld_polyveck)))
   assigns(memory_slice(tmp, sizeof(mld_poly)))
   ensures(forall(k1, 0, MLDSA_K, array_abs_bound(h->vec[k1].coeffs, 0, MLDSA_N, MLDSA_Q)))
@@ -666,11 +690,13 @@ __contract__(
   requires(memory_no_alias(s2, sizeof(mld_s2vec)))
   requires(memory_no_alias(t0, sizeof(mld_t0vec)))
   requires(nonce <= MLD_NONCE_UB)
+#if !defined(MLD_CONFIG_REDUCE_RAM)
   requires(forall(k1, 0, MLDSA_K, forall(l1, 0, MLDSA_L,
                                          array_bound(mat->vec[k1].vec[l1].coeffs, 0, MLDSA_N, 0, MLDSA_Q))))
   requires(forall(k2, 0, MLDSA_K, array_abs_bound(t0->vec.vec[k2].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
   requires(forall(k3, 0, MLDSA_L, array_abs_bound(s1->vec.vec[k3].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
   requires(forall(k4, 0, MLDSA_K, array_abs_bound(s2->vec.vec[k4].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+#endif
   assigns(memory_slice(sig, MLDSA_CRYPTO_BYTES))
   ensures(return_value == 0 || return_value == MLD_ERR_FAIL ||
           return_value == MLD_ERR_OUT_OF_MEMORY)
@@ -887,11 +913,13 @@ int mld_sign_signature_internal(uint8_t sig[MLDSA_CRYPTO_BYTES], size_t *siglen,
     /* t0, s1, s2, and mat are initialized above and are NOT changed by this */
     /* loop. We can therefore re-assert their bounds here as part of the     */
     /* loop invariant. This makes proof noticeably faster with CBMC          */
+#if !defined(MLD_CONFIG_REDUCE_RAM)
     invariant(forall(k1, 0, MLDSA_K, forall(l1, 0, MLDSA_L,
               array_bound(mat->vec[k1].vec[l1].coeffs, 0, MLDSA_N, 0, MLDSA_Q))))
     invariant(forall(k2, 0, MLDSA_K, array_abs_bound(t0->vec.vec[k2].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
     invariant(forall(k3, 0, MLDSA_L, array_abs_bound(s1->vec.vec[k3].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
     invariant(forall(k4, 0, MLDSA_K, array_abs_bound(s2->vec.vec[k4].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+#endif
     invariant(ret == MLD_ERR_FAIL)
     decreases(MLD_NONCE_UB - nonce)
   )

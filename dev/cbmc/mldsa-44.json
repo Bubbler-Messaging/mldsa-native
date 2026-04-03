@@ -1,8 +1,8 @@
 {
   "mldsa_parameter_set": "44",
   "summary": {
-    "total": 177,
-    "success": 177,
+    "total": 179,
+    "success": 179,
     "failed": 0,
     "timeout": 0
   },
@@ -11,17 +11,17 @@
     {
       "name": "caddq",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "decompose",
       "unit": "seconds",
-      "value": 4
+      "value": 2
     },
     {
       "name": "fqmul",
       "unit": "seconds",
-      "value": 20
+      "value": 21
     },
     {
       "name": "fqscale",
@@ -31,7 +31,7 @@
     {
       "name": "intt_native_x86_64",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "keccak_absorb",
@@ -46,27 +46,27 @@
     {
       "name": "keccak_finalize",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "keccak_init",
       "unit": "seconds",
-      "value": 2
+      "value": 1
     },
     {
       "name": "keccak_squeeze",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "keccak_squeezeblocks_x4",
       "unit": "seconds",
-      "value": 6
+      "value": 7
     },
     {
       "name": "keccakf1600_extract_bytes (big endian)",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "keccakf1600_permute",
@@ -81,12 +81,12 @@
     {
       "name": "keccakf1600_xor_bytes",
       "unit": "seconds",
-      "value": 2
+      "value": 1
     },
     {
       "name": "keccakf1600_xor_bytes (big endian)",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "keccakf1600x4_extract_bytes",
@@ -101,37 +101,37 @@
     {
       "name": "keccakf1600x4_permute_native",
       "unit": "seconds",
-      "value": 12
+      "value": 14
     },
     {
       "name": "keccakf1600x4_xor_bytes",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "make_hint",
       "unit": "seconds",
-      "value": 4
+      "value": 2
     },
     {
       "name": "mld_attempt_signature_generation",
       "unit": "seconds",
-      "value": 227
+      "value": 253
     },
     {
       "name": "mld_check_pct",
       "unit": "seconds",
-      "value": 7
+      "value": 6
     },
     {
       "name": "mld_compute_pack_z",
       "unit": "seconds",
-      "value": 6
+      "value": 4
     },
     {
       "name": "mld_compute_t0_t1_tr_from_sk_components",
       "unit": "seconds",
-      "value": 13
+      "value": 15
     },
     {
       "name": "mld_ct_abs_i32",
@@ -146,22 +146,22 @@
     {
       "name": "mld_ct_cmask_nonzero_u32",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "mld_ct_cmask_nonzero_u8",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "mld_ct_get_optblocker_i64",
       "unit": "seconds",
-      "value": 1
+      "value": 5
     },
     {
       "name": "mld_ct_get_optblocker_u32",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "mld_ct_get_optblocker_u8",
@@ -171,42 +171,42 @@
     {
       "name": "mld_ct_memcmp",
       "unit": "seconds",
-      "value": 73
+      "value": 78
     },
     {
       "name": "mld_ct_sel_int32",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "mld_h",
       "unit": "seconds",
-      "value": 5
+      "value": 2
     },
     {
       "name": "mld_invntt_layer",
       "unit": "seconds",
-      "value": 85
+      "value": 88
     },
     {
       "name": "mld_keccakf1600_extract_bytes",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "mld_ntt_butterfly_block",
       "unit": "seconds",
-      "value": 11
+      "value": 12
     },
     {
       "name": "mld_ntt_layer",
       "unit": "seconds",
-      "value": 54
+      "value": 56
     },
     {
       "name": "mld_polyvecl_permute_bitrev_to_custom_native",
       "unit": "seconds",
-      "value": 8
+      "value": 10
     },
     {
       "name": "mld_prepare_domain_separation_prefix",
@@ -216,32 +216,32 @@
     {
       "name": "mld_sample_s1_s2",
       "unit": "seconds",
-      "value": 2
+      "value": 7
     },
     {
       "name": "mld_sample_s1_s2_serial",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "mld_value_barrier_i64",
       "unit": "seconds",
-      "value": 6
+      "value": 2
     },
     {
       "name": "mld_value_barrier_u32",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "mld_value_barrier_u8",
       "unit": "seconds",
-      "value": 5
+      "value": 3
     },
     {
       "name": "montgomery_reduce",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "ntt_native_aarch64",
@@ -251,32 +251,32 @@
     {
       "name": "ntt_native_x86_64",
       "unit": "seconds",
-      "value": 5
+      "value": 3
     },
     {
       "name": "pack_pk",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "pack_sig_c_h",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "pack_sig_z",
       "unit": "seconds",
-      "value": 5
+      "value": 2
     },
     {
       "name": "pack_sk",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "poly_add",
       "unit": "seconds",
-      "value": 11
+      "value": 12
     },
     {
       "name": "poly_caddq",
@@ -286,22 +286,22 @@
     {
       "name": "poly_caddq_c",
       "unit": "seconds",
-      "value": 6
+      "value": 4
     },
     {
       "name": "poly_caddq_native",
       "unit": "seconds",
-      "value": 4
+      "value": 6
     },
     {
       "name": "poly_caddq_native_aarch64",
       "unit": "seconds",
-      "value": 5
+      "value": 3
     },
     {
       "name": "poly_challenge",
       "unit": "seconds",
-      "value": 6
+      "value": 5
     },
     {
       "name": "poly_chknorm",
@@ -311,12 +311,12 @@
     {
       "name": "poly_chknorm_c",
       "unit": "seconds",
-      "value": 21
+      "value": 20
     },
     {
       "name": "poly_chknorm_native",
       "unit": "seconds",
-      "value": 2
+      "value": 5
     },
     {
       "name": "poly_chknorm_native_aarch64",
@@ -326,22 +326,22 @@
     {
       "name": "poly_decompose",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "poly_decompose_c",
       "unit": "seconds",
-      "value": 5
+      "value": 2
     },
     {
       "name": "poly_decompose_native",
       "unit": "seconds",
-      "value": 2
+      "value": 4
     },
     {
       "name": "poly_invntt_tomont",
       "unit": "seconds",
-      "value": 6
+      "value": 2
     },
     {
       "name": "poly_invntt_tomont_c",
@@ -351,52 +351,52 @@
     {
       "name": "poly_invntt_tomont_native",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "poly_make_hint",
       "unit": "seconds",
-      "value": 4
+      "value": 2
     },
     {
       "name": "poly_ntt",
       "unit": "seconds",
-      "value": 2
+      "value": 5
     },
     {
       "name": "poly_ntt_c",
       "unit": "seconds",
-      "value": 2
+      "value": 4
     },
     {
       "name": "poly_ntt_native",
       "unit": "seconds",
-      "value": 2
+      "value": 4
     },
     {
       "name": "poly_pointwise_montgomery",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "poly_pointwise_montgomery_c",
       "unit": "seconds",
-      "value": 147
+      "value": 155
     },
     {
       "name": "poly_pointwise_montgomery_native",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "poly_power2round",
       "unit": "seconds",
-      "value": 5
+      "value": 4
     },
     {
       "name": "poly_reduce",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "poly_shiftl",
@@ -406,7 +406,7 @@
     {
       "name": "poly_sub",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "poly_uniform",
@@ -421,17 +421,17 @@
     {
       "name": "poly_uniform_eta",
       "unit": "seconds",
-      "value": 7
+      "value": 4
     },
     {
       "name": "poly_uniform_eta_4x",
       "unit": "seconds",
-      "value": 17
+      "value": 18
     },
     {
       "name": "poly_uniform_gamma1",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "poly_uniform_gamma1_4x",
@@ -441,17 +441,17 @@
     {
       "name": "poly_use_hint",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "poly_use_hint_c",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "poly_use_hint_native",
       "unit": "seconds",
-      "value": 5
+      "value": 2
     },
     {
       "name": "polyeta_pack",
@@ -466,12 +466,12 @@
     {
       "name": "polymat_permute_bitrev_to_custom",
       "unit": "seconds",
-      "value": 15
+      "value": 17
     },
     {
       "name": "polyt0_pack",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "polyt0_unpack",
@@ -486,17 +486,17 @@
     {
       "name": "polyt1_unpack",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "polyvec_matrix_expand",
       "unit": "seconds",
-      "value": 26
+      "value": 19
     },
     {
       "name": "polyvec_matrix_expand_serial",
       "unit": "seconds",
-      "value": 11
+      "value": 16
     },
     {
       "name": "polyvec_matrix_pointwise_montgomery",
@@ -506,12 +506,12 @@
     {
       "name": "polyveck_add",
       "unit": "seconds",
-      "value": 8
+      "value": 9
     },
     {
       "name": "polyveck_caddq",
       "unit": "seconds",
-      "value": 4
+      "value": 6
     },
     {
       "name": "polyveck_chknorm",
@@ -526,42 +526,52 @@
     {
       "name": "polyveck_invntt_tomont",
       "unit": "seconds",
-      "value": 5
+      "value": 4
     },
     {
       "name": "polyveck_make_hint",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "polyveck_ntt",
       "unit": "seconds",
-      "value": 9
+      "value": 5
     },
     {
       "name": "polyveck_pack_eta",
       "unit": "seconds",
-      "value": 4
+      "value": 5
     },
     {
       "name": "polyveck_pack_t0",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "polyveck_pack_w1",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "polyveck_pointwise_poly_montgomery",
+      "unit": "seconds",
+      "value": 5
+    },
+    {
+      "name": "polyveck_pointwise_poly_montgomery_s2",
+      "unit": "seconds",
+      "value": 4
+    },
+    {
+      "name": "polyveck_pointwise_poly_montgomery_t0",
       "unit": "seconds",
       "value": 4
     },
     {
       "name": "polyveck_power2round",
       "unit": "seconds",
-      "value": 11
+      "value": 13
     },
     {
       "name": "polyveck_reduce",
@@ -581,7 +591,7 @@
     {
       "name": "polyveck_unpack_eta",
       "unit": "seconds",
-      "value": 3
+      "value": 6
     },
     {
       "name": "polyveck_unpack_t0",
@@ -591,12 +601,12 @@
     {
       "name": "polyveck_use_hint",
       "unit": "seconds",
-      "value": 10
+      "value": 7
     },
     {
       "name": "polyvecl_chknorm",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "polyvecl_ntt",
@@ -606,32 +616,32 @@
     {
       "name": "polyvecl_pack_eta",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "polyvecl_permute_bitrev_to_custom",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "polyvecl_pointwise_acc_montgomery",
       "unit": "seconds",
-      "value": 6
+      "value": 2
     },
     {
       "name": "polyvecl_pointwise_acc_montgomery_c",
       "unit": "seconds",
-      "value": 204
+      "value": 216
     },
     {
       "name": "polyvecl_pointwise_acc_montgomery_native",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "polyvecl_uniform_gamma1",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "polyvecl_uniform_gamma1_serial",
@@ -641,37 +651,37 @@
     {
       "name": "polyvecl_unpack_eta",
       "unit": "seconds",
-      "value": 4
+      "value": 2
     },
     {
       "name": "polyvecl_unpack_z",
       "unit": "seconds",
-      "value": 5
+      "value": 3
     },
     {
       "name": "polyw1_pack",
       "unit": "seconds",
-      "value": 1
+      "value": 4
     },
     {
       "name": "polyz_pack",
       "unit": "seconds",
-      "value": 6
+      "value": 4
     },
     {
       "name": "polyz_unpack",
       "unit": "seconds",
-      "value": 1
+      "value": 3
     },
     {
       "name": "polyz_unpack_c",
       "unit": "seconds",
-      "value": 11
+      "value": 12
     },
     {
       "name": "polyz_unpack_native",
       "unit": "seconds",
-      "value": 2
+      "value": 3
     },
     {
       "name": "power2round",
@@ -686,37 +696,37 @@
     {
       "name": "rej_eta",
       "unit": "seconds",
-      "value": 5
+      "value": 3
     },
     {
       "name": "rej_eta_c",
       "unit": "seconds",
-      "value": 4
+      "value": 3
     },
     {
       "name": "rej_eta_native",
       "unit": "seconds",
-      "value": 4
+      "value": 5
     },
     {
       "name": "rej_uniform",
       "unit": "seconds",
-      "value": 20
+      "value": 21
     },
     {
       "name": "rej_uniform_c",
       "unit": "seconds",
-      "value": 14
+      "value": 16
     },
     {
       "name": "rej_uniform_native",
       "unit": "seconds",
-      "value": 141
+      "value": 145
     },
     {
       "name": "shake128_absorb",
       "unit": "seconds",
-      "value": 2
+      "value": 1
     },
     {
       "name": "shake128_finalize",
@@ -731,47 +741,47 @@
     {
       "name": "shake128_release",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "shake128_squeeze",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "shake128x4_absorb_once",
       "unit": "seconds",
-      "value": 4
+      "value": 2
     },
     {
       "name": "shake128x4_squeezeblocks",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "shake256",
       "unit": "seconds",
-      "value": 5
+      "value": 2
     },
     {
       "name": "shake256_absorb",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "shake256_finalize",
       "unit": "seconds",
-      "value": 1
+      "value": 3
     },
     {
       "name": "shake256_init",
       "unit": "seconds",
-      "value": 2
+      "value": 1
     },
     {
       "name": "shake256_release",
       "unit": "seconds",
-      "value": 1
+      "value": 2
     },
     {
       "name": "shake256_squeeze",
@@ -781,22 +791,22 @@
     {
       "name": "shake256x4_absorb_once",
       "unit": "seconds",
-      "value": 4
+      "value": 2
     },
     {
       "name": "shake256x4_squeezeblocks",
       "unit": "seconds",
-      "value": 5
+      "value": 4
     },
     {
       "name": "sign",
       "unit": "seconds",
-      "value": 7
+      "value": 11
     },
     {
       "name": "sign_keypair",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     },
     {
       "name": "sign_keypair_internal",
@@ -806,57 +816,57 @@
     {
       "name": "sign_open",
       "unit": "seconds",
-      "value": 8
+      "value": 4
     },
     {
       "name": "sign_pk_from_sk",
       "unit": "seconds",
-      "value": 8
+      "value": 5
     },
     {
       "name": "sign_signature",
       "unit": "seconds",
-      "value": 8
+      "value": 5
     },
     {
       "name": "sign_signature_extmu",
       "unit": "seconds",
-      "value": 6
+      "value": 4
     },
     {
       "name": "sign_signature_internal",
       "unit": "seconds",
-      "value": 32
+      "value": 18
     },
     {
       "name": "sign_signature_pre_hash_internal",
       "unit": "seconds",
-      "value": 5
+      "value": 7
     },
     {
       "name": "sign_signature_pre_hash_shake256",
       "unit": "seconds",
-      "value": 6
+      "value": 7
     },
     {
       "name": "sign_verify",
       "unit": "seconds",
-      "value": 5
+      "value": 6
     },
     {
       "name": "sign_verify_extmu",
       "unit": "seconds",
-      "value": 3
+      "value": 6
     },
     {
       "name": "sign_verify_internal",
       "unit": "seconds",
-      "value": 122
+      "value": 184
     },
     {
       "name": "sign_verify_pre_hash_internal",
       "unit": "seconds",
-      "value": 3
+      "value": 5
     },
     {
       "name": "sign_verify_pre_hash_shake256",
@@ -881,17 +891,17 @@
     {
       "name": "unpack_sig",
       "unit": "seconds",
-      "value": 3
+      "value": 2
     },
     {
       "name": "unpack_sk",
       "unit": "seconds",
-      "value": 7
+      "value": 8
     },
     {
       "name": "use_hint",
       "unit": "seconds",
-      "value": 3
+      "value": 4
     }
   ]
 }

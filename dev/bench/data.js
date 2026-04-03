@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775223200594,
+  "lastUpdate": 1775223203844,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -385537,6 +385537,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 373875,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@zerorisc.com",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "80eccd89db9fc184cdedac33a2d1c611f42a90a2",
+          "message": "lowram: Introduce lazy s1hat/s2hat/t0hat types for on-demand unpacking\n\nIntroduce mld_sk_s1hat, mld_sk_s2hat, and mld_sk_t0hat types with\neager and lazy variants, following the same pattern as mld_polymat for\nreduced RAM usage. In normal mode, they store the full NTT'd vectors.\nIn REDUCE_RAM mode, they store a pointer to the packed data in the\nsecret key and unpack + NTT individual polynomials on demand.\n\nThe eager and lazy variants are defined as separate struct types\n(mld_sk_{s1hat,s2hat,t0hat}_{eager,lazy}) with dedicated\nmld_unpack_sk_* and mld_sk_*_get_poly functions, in a new header\npolyvec_lazy.h. MLD_CONFIG_REDUCE_RAM selects the active variant\nvia typedef/define.\n\npk_from_sk inlines the secret key unpacking directly, since it needs\nraw polynomial vectors rather than the lazy/eager NTT'd types.\n\nAdd a unit test verifying that eager and lazy init+get produce\nidentical results for all indices across s1hat, s2hat, and t0hat.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@zerorisc.com>",
+          "timestamp": "2026-04-03T21:28:36+08:00",
+          "tree_id": "c16398015b7965680f65b801aaddb797995037e0",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/80eccd89db9fc184cdedac33a2d1c611f42a90a2"
+        },
+        "date": 1775223201676,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 128203,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 447979,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 144661,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 220385,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 729459,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 223274,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 366584,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 928114,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 373892,
             "unit": "cycles"
           }
         ]

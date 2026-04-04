@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775223299848,
+  "lastUpdate": 1775282534282,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -217743,6 +217743,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 95449,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "willie.zhao@chelpis.com",
+            "name": "willieyz",
+            "username": "willieyz"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "61ae45aee3de9f5fe0133a14d34b89ff6e308dac",
+          "message": "x86_64: Eliminate caddq intrinsics\n\nThis commit replace the current caddq AVX2 intrinsic implementation with x86_64\nassembly to enable formal verification using HOL-Light in a follow-up PR.\n\nSigned-off-by: willieyz <willie.zhao@chelpis.com>",
+          "timestamp": "2026-04-04T13:58:54+08:00",
+          "tree_id": "ec178b180b199cd60bb420c855babddf268ddc9a",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/61ae45aee3de9f5fe0133a14d34b89ff6e308dac"
+        },
+        "date": 1775282456531,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 34512,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 120569,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 38131,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 61515,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 203381,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 62938,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 94161,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 239904,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 96475,
             "unit": "cycles"
           }
         ]

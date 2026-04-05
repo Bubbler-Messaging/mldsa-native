@@ -4,11 +4,11 @@
 include ../Makefile_params.common
 
 HARNESS_ENTRY = harness
-HARNESS_FILE = polyvec_matrix_expand_harness
+HARNESS_FILE = polyvec_matrix_expand_eager_serial_harness
 
 # This should be a unique identifier for this proof, and will appear on the
 # Litani dashboard. It can be human-readable and contain spaces if you wish.
-PROOF_UID = polyvec_matrix_expand_serial
+PROOF_UID = polyvec_matrix_expand_eager_serial
 
 DEFINES += -DMLD_CONFIG_SERIAL_FIPS202_ONLY
 INCLUDES +=
@@ -17,9 +17,9 @@ REMOVE_FUNCTION_BODY +=
 UNWINDSET +=
 
 PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
-PROJECT_SOURCES += $(SRCDIR)/mldsa/src/polyvec.c
+PROJECT_SOURCES += $(SRCDIR)/mldsa/src/polyvec_lazy.c
 
-CHECK_FUNCTION_CONTRACTS=mld_polyvec_matrix_expand
+CHECK_FUNCTION_CONTRACTS=mld_polyvec_matrix_expand_eager
 USE_FUNCTION_CONTRACTS=mld_poly_uniform
 APPLY_LOOP_CONTRACTS=on
 USE_DYNAMIC_FRAMES=1
@@ -28,7 +28,7 @@ USE_DYNAMIC_FRAMES=1
 EXTERNAL_SAT_SOLVER=
 CBMCFLAGS=--smt2 --arrays-uf-always --slice-formula
 
-FUNCTION_NAME = polyvec_matrix_expand_serial
+FUNCTION_NAME = polyvec_matrix_expand_eager_serial
 
 # If this proof is found to consume huge amounts of RAM, you can set the
 # EXPENSIVE variable. With new enough versions of the proof tools, this will

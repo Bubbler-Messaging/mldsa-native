@@ -315,10 +315,6 @@
 #undef mld_polyz_unpack
 /* mldsa/src/polyvec.h */
 #undef MLD_POLYVEC_H
-#undef mld_polymat
-#undef mld_polymat_get_row
-#undef mld_polyvec_matrix_expand
-#undef mld_polyvec_matrix_pointwise_montgomery
 #undef mld_polyveck
 #undef mld_polyveck_add
 #undef mld_polyveck_caddq
@@ -347,6 +343,18 @@
 #undef mld_polyvecl_unpack_z
 /* mldsa/src/polyvec_lazy.h */
 #undef MLD_POLYVEC_LAZY_H
+#undef mld_poly_permute_bitrev_to_custom_optional
+#undef mld_polymat
+#undef mld_polymat_eager
+#undef mld_polymat_get_poly_lazy
+#undef mld_polymat_get_row_eager
+#undef mld_polymat_lazy
+#undef mld_polyvec_matrix_expand
+#undef mld_polyvec_matrix_expand_eager
+#undef mld_polyvec_matrix_expand_lazy
+#undef mld_polyvec_matrix_pointwise_montgomery
+#undef mld_polyvec_matrix_pointwise_montgomery_eager
+#undef mld_polyvec_matrix_pointwise_montgomery_lazy
 #undef mld_sk_s1hat
 #undef mld_sk_s1hat_eager
 #undef mld_sk_s1hat_get_poly

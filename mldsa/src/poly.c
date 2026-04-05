@@ -91,7 +91,8 @@ void mld_poly_caddq(mld_poly *a)
   mld_poly_caddq_c(a);
 }
 
-#if !defined(MLD_CONFIG_NO_KEYPAIR_API) || !defined(MLD_CONFIG_NO_SIGN_API)
+#if !defined(MLD_CONFIG_NO_KEYPAIR_API) || !defined(MLD_CONFIG_NO_SIGN_API) || \
+    !defined(MLD_CONFIG_NO_VERIFY_API)
 /* Reference: We use destructive version (output=first input) to avoid
  *            reasoning about aliasing in the CBMC specification */
 MLD_INTERNAL_API
@@ -112,7 +113,7 @@ void mld_poly_add(mld_poly *r, const mld_poly *b)
     r->coeffs[i] = r->coeffs[i] + b->coeffs[i];
   }
 }
-#endif /* !MLD_CONFIG_NO_KEYPAIR_API || !MLD_CONFIG_NO_SIGN_API */
+#endif /* !MLD_CONFIG_NO_KEYPAIR_API || !MLD_CONFIG_NO_SIGN_API || !MLD_CONFIG_NO_VERIFY_API */
 
 #if !defined(MLD_CONFIG_NO_SIGN_API) || !defined(MLD_CONFIG_NO_VERIFY_API)
 /* Reference: We use destructive version (output=first input) to avoid

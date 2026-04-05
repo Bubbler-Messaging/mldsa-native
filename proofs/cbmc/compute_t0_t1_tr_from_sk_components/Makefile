@@ -21,9 +21,9 @@ PROJECT_SOURCES += $(SRCDIR)/mldsa/src/sign.c
 
 CHECK_FUNCTION_CONTRACTS=mld_compute_t0_t1_tr_from_sk_components
 USE_FUNCTION_CONTRACTS=mld_shake256
-USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_expand
+USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_expand_eager
 USE_FUNCTION_CONTRACTS+=mld_polyvecl_ntt
-USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_pointwise_montgomery
+USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_pointwise_montgomery_eager
 USE_FUNCTION_CONTRACTS+=mld_polyveck_reduce
 USE_FUNCTION_CONTRACTS+=mld_polyveck_invntt_tomont
 USE_FUNCTION_CONTRACTS+=mld_polyveck_add

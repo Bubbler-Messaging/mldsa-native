@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775405504070,
+  "lastUpdate": 1775405528098,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -290601,6 +290601,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 269898,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@zerorisc.com",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "0f8b8e074b2525eb844b022b03b962bf888d51aa",
+          "message": "simpasm: Move .note.GNU-stack outside preprocessor guards\n\nThe .note.GNU-stack section directive was emitted inside the\nautogen_header, which ends up inside preprocessor guards like\nif \\!defined(MLD_CONFIG_MULTILEVEL_NO_SHARED). When these guards\nevaluate to false, the directive is preprocessed away, producing\nan object file without the section and triggering a linker warning\nabout an executable stack.\n\nFix by emitting the .note.GNU-stack directive at the end of the\nfile, after the closing #endif of any guards. Also use %progbits\ninstead of @progbits for aarch64 and armv81m, since @ is the\ncomment character in Arm assembly. Emit the directive for all\narchitectures including armv81m.\n\nPort of pq-code-package/mlkem-native#1637.\n\nSigned-off-by: Matthias J. Kannwischer <matthias@zerorisc.com>",
+          "timestamp": "2026-04-05T17:08:21+01:00",
+          "tree_id": "9a8eccec44be35d3c786e87bca0e24e5bb7009e3",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/0f8b8e074b2525eb844b022b03b962bf888d51aa"
+        },
+        "date": 1775405527828,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 94592,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 333857,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 99864,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 159928,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 544846,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 160968,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 267912,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 709152,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 270923,
             "unit": "cycles"
           }
         ]

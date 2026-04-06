@@ -31,6 +31,19 @@ int randombytes(uint8_t *buf, size_t len);
 int randombytes_counter = 0;
 int randombytes_fail_on_counter = -1;
 
+#define mld_sign_keypair MLD_API_NAMESPACE(keypair)
+#define mld_sign_signature MLD_API_NAMESPACE(signature)
+#define mld_sign_verify MLD_API_NAMESPACE(verify)
+#define mld_sign MLD_API_NAMESPACE(sign)
+#define mld_sign_open MLD_API_NAMESPACE(open)
+#define mld_sign_signature_extmu MLD_API_NAMESPACE(signature_extmu)
+#define mld_sign_verify_extmu MLD_API_NAMESPACE(verify_extmu)
+#define mld_sign_signature_pre_hash_shake256 \
+  MLD_API_NAMESPACE(signature_pre_hash_shake256)
+#define mld_sign_verify_pre_hash_shake256 \
+  MLD_API_NAMESPACE(verify_pre_hash_shake256)
+#define mld_sign_pk_from_sk MLD_API_NAMESPACE(pk_from_sk)
+
 static void reset_all(void)
 {
   randombytes_counter = 0;
@@ -114,7 +127,7 @@ static int test_keygen_rng_failure(void)
   uint8_t pk[CRYPTO_PUBLICKEYBYTES];
   uint8_t sk[CRYPTO_SECRETKEYBYTES];
 
-  TEST_RNG_FAILURE("crypto_sign_keypair", crypto_sign_keypair(pk, sk));
+  TEST_RNG_FAILURE("mld_sign_keypair", mld_sign_keypair(pk, sk));
   return 0;
 }
 
@@ -129,15 +142,15 @@ static int test_sign_rng_failure(void)
 
   /* Generate valid keypair first */
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
-    fprintf(stderr, "ERROR: crypto_sign_keypair failed in sign test setup\n");
+    fprintf(stderr, "ERROR: mld_sign_keypair failed in sign test setup\n");
     return 1;
   }
 
-  TEST_RNG_FAILURE("crypto_sign_signature",
-                   crypto_sign_signature(sig, &siglen, msg, sizeof(msg), ctx,
-                                         sizeof(ctx) - 1, sk));
+  TEST_RNG_FAILURE("mld_sign_signature",
+                   mld_sign_signature(sig, &siglen, msg, sizeof(msg), ctx,
+                                      sizeof(ctx) - 1, sk));
   return 0;
 }
 
@@ -152,23 +165,22 @@ static int test_verify_rng_failure(void)
 
   /* Generate valid keypair and signature first */
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
-    fprintf(stderr, "ERROR: crypto_sign_keypair failed in verify test setup\n");
+    fprintf(stderr, "ERROR: mld_sign_keypair failed in verify test setup\n");
     return 1;
   }
 
-  if (crypto_sign_signature(sig, &siglen, msg, sizeof(msg), ctx, sizeof(ctx),
-                            sk) != 0)
+  if (mld_sign_signature(sig, &siglen, msg, sizeof(msg), ctx, sizeof(ctx),
+                         sk) != 0)
   {
-    fprintf(stderr,
-            "ERROR: crypto_sign_signature failed in verify test setup\n");
+    fprintf(stderr, "ERROR: mld_sign_signature failed in verify test setup\n");
     return 1;
   }
 
   TEST_RNG_FAILURE(
-      "crypto_sign_verify",
-      crypto_sign_verify(sig, siglen, msg, sizeof(msg), ctx, sizeof(ctx), pk));
+      "mld_sign_verify",
+      mld_sign_verify(sig, siglen, msg, sizeof(msg), ctx, sizeof(ctx), pk));
   return 0;
 }
 
@@ -182,15 +194,15 @@ static int test_sign_combined_rng_failure(void)
   size_t smlen;
 
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
     fprintf(stderr,
-            "ERROR: crypto_sign_keypair failed in sign combined test setup\n");
+            "ERROR: mld_sign_keypair failed in sign combined test setup\n");
     return 1;
   }
 
-  TEST_RNG_FAILURE("crypto_sign", crypto_sign(sm, &smlen, msg, sizeof(msg), ctx,
-                                              sizeof(ctx) - 1, sk));
+  TEST_RNG_FAILURE("mld_sign", mld_sign(sm, &smlen, msg, sizeof(msg), ctx,
+                                        sizeof(ctx) - 1, sk));
   return 0;
 }
 
@@ -205,21 +217,20 @@ static int test_open_rng_failure(void)
   size_t smlen, mlen;
 
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
-    fprintf(stderr, "ERROR: crypto_sign_keypair failed in open test setup\n");
+    fprintf(stderr, "ERROR: mld_sign_keypair failed in open test setup\n");
     return 1;
   }
 
-  if (crypto_sign(sm, &smlen, msg, sizeof(msg), ctx, sizeof(ctx) - 1, sk) != 0)
+  if (mld_sign(sm, &smlen, msg, sizeof(msg), ctx, sizeof(ctx) - 1, sk) != 0)
   {
-    fprintf(stderr, "ERROR: crypto_sign failed in open test setup\n");
+    fprintf(stderr, "ERROR: mld_sign failed in open test setup\n");
     return 1;
   }
 
-  TEST_RNG_FAILURE(
-      "crypto_sign_open",
-      crypto_sign_open(msg_out, &mlen, sm, smlen, ctx, sizeof(ctx) - 1, pk));
+  TEST_RNG_FAILURE("mld_sign_open", mld_sign_open(msg_out, &mlen, sm, smlen,
+                                                  ctx, sizeof(ctx) - 1, pk));
   return 0;
 }
 
@@ -235,17 +246,16 @@ static int test_signature_extmu_rng_failure(void)
   reset_all();
   if (crypto_sign_keypair(pk, sk) != 0)
   {
-    fprintf(
-        stderr,
-        "ERROR: crypto_sign_keypair failed in signature_extmu test setup\n");
+    fprintf(stderr,
+            "ERROR: mld_sign_keypair failed in signature_extmu test setup\n");
     return 1;
   }
 
   /* Fill mu with test data */
   randombytes(mu, sizeof(mu));
 
-  TEST_RNG_FAILURE("crypto_sign_signature_extmu",
-                   MLD_API_NAMESPACE(signature_extmu)(sig, &siglen, mu, sk));
+  TEST_RNG_FAILURE("mld_sign_signature_extmu",
+                   mld_sign_signature_extmu(sig, &siglen, mu, sk));
   return 0;
 }
 
@@ -258,23 +268,23 @@ static int test_verify_extmu_rng_failure(void)
   size_t siglen;
 
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
     fprintf(stderr,
-            "ERROR: crypto_sign_keypair failed in verify_extmu test setup\n");
+            "ERROR: mld_sign_keypair failed in verify_extmu test setup\n");
     return 1;
   }
 
-  if (MLD_API_NAMESPACE(signature_extmu)(sig, &siglen, mu, sk) != 0)
+  if (mld_sign_signature_extmu(sig, &siglen, mu, sk) != 0)
   {
     fprintf(stderr,
-            "ERROR: crypto_sign_signature_extmu failed in verify_extmu test "
+            "ERROR: mld_sign_signature_extmu failed in verify_extmu test "
             "setup\n");
     return 1;
   }
 
-  TEST_RNG_FAILURE("crypto_sign_verify_extmu",
-                   MLD_API_NAMESPACE(verify_extmu)(sig, siglen, mu, pk));
+  TEST_RNG_FAILURE("mld_sign_verify_extmu",
+                   mld_sign_verify_extmu(sig, siglen, mu, pk));
   return 0;
 }
 
@@ -289,19 +299,19 @@ static int test_signature_pre_hash_shake256_rng_failure(void)
   size_t siglen;
 
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
     fprintf(
         stderr,
-        "ERROR: crypto_sign_keypair failed in signature_pre_hash_shake256 test "
+        "ERROR: mld_sign_keypair failed in signature_pre_hash_shake256 test "
         "setup\n");
     return 1;
   }
 
   TEST_RNG_FAILURE(
-      "crypto_sign_signature_pre_hash_shake256",
-      MLD_API_NAMESPACE(signature_pre_hash_shake256)(
-          sig, &siglen, msg, sizeof(msg), ctx, sizeof(ctx) - 1, rnd, sk));
+      "mld_sign_signature_pre_hash_shake256",
+      mld_sign_signature_pre_hash_shake256(sig, &siglen, msg, sizeof(msg), ctx,
+                                           sizeof(ctx) - 1, rnd, sk));
   return 0;
 }
 
@@ -316,28 +326,27 @@ static int test_verify_pre_hash_shake256_rng_failure(void)
   size_t siglen;
 
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
-    fprintf(
-        stderr,
-        "ERROR: crypto_sign_keypair failed in verify_pre_hash_shake256 test "
-        "setup\n");
+    fprintf(stderr,
+            "ERROR: mld_sign_keypair failed in verify_pre_hash_shake256 test "
+            "setup\n");
     return 1;
   }
 
-  if (MLD_API_NAMESPACE(signature_pre_hash_shake256)(
-          sig, &siglen, msg, sizeof(msg), ctx, sizeof(ctx) - 1, rnd, sk) != 0)
+  if (mld_sign_signature_pre_hash_shake256(sig, &siglen, msg, sizeof(msg), ctx,
+                                           sizeof(ctx) - 1, rnd, sk) != 0)
   {
     fprintf(stderr,
-            "ERROR: crypto_sign_signature_pre_hash_shake256 failed in "
+            "ERROR: mld_sign_signature_pre_hash_shake256 failed in "
             "verify_pre_hash_shake256 test setup\n");
     return 1;
   }
 
   TEST_RNG_FAILURE(
-      "crypto_sign_verify_pre_hash_shake256",
-      MLD_API_NAMESPACE(verify_pre_hash_shake256)(sig, siglen, msg, sizeof(msg),
-                                                  ctx, sizeof(ctx) - 1, pk));
+      "mld_sign_verify_pre_hash_shake256",
+      mld_sign_verify_pre_hash_shake256(sig, siglen, msg, sizeof(msg), ctx,
+                                        sizeof(ctx) - 1, pk));
   return 0;
 }
 
@@ -347,15 +356,14 @@ static int test_pk_from_sk_rng_failure(void)
   uint8_t sk[CRYPTO_SECRETKEYBYTES];
 
   reset_all();
-  if (crypto_sign_keypair(pk, sk) != 0)
+  if (mld_sign_keypair(pk, sk) != 0)
   {
     fprintf(stderr,
-            "ERROR: crypto_sign_keypair failed in pk_from_sk test setup\n");
+            "ERROR: mld_sign_keypair failed in pk_from_sk test setup\n");
     return 1;
   }
 
-  TEST_RNG_FAILURE("crypto_sign_pk_from_sk",
-                   MLD_API_NAMESPACE(pk_from_sk)(pk, sk));
+  TEST_RNG_FAILURE("mld_sign_pk_from_sk", mld_sign_pk_from_sk(pk, sk));
   return 0;
 }
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) The mldsa-native project authors
+# Copyright (c) The mlkem-native project authors
 # SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
 
 set -o errexit
@@ -64,6 +65,18 @@ git ls-files -- ":/*.c" ":/*.h" | xargs -P "$nproc" -I {} sh -c '
   if [[ ! -L {} ]]; then
     clang-format -i {}
   fi'
+
+info "Expanding tabs"
+expand-tabs()
+{
+  git ls-files -- ":/" ":/!:Makefile" ":/!:**/Makefile" ":/!:**/Makefile.*" ":/!:Makefile.*" ":/!:*.mk" ":/!:*.patch" ":/!:*.S" ":/!:*.inc" ":/!:nix/valgrind/*.txt" | xargs -P "$nproc" -I {} sh -c '
+    if [ ! -L {} ] && grep -Pq '"'"'\t'"'"' "{}"; then
+      tmp=$(mktemp)
+      expand -t 4 "{}" > "$tmp" && mv "$tmp" "{}"
+      echo "{}"
+    fi'
+}
+expand-tabs
 
 info "Checking for eol"
 check-eol()

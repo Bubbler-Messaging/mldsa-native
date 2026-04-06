@@ -179,6 +179,7 @@ source code and documentation.
   - [dev/aarch64_opt/src/ntt.S](dev/aarch64_opt/src/ntt.S)
   - [mldsa/src/native/aarch64/src/intt.S](mldsa/src/native/aarch64/src/intt.S)
   - [mldsa/src/native/aarch64/src/ntt.S](mldsa/src/native/aarch64/src/ntt.S)
+  - [proofs/hol_light/aarch64/mldsa/mldsa_ntt.S](proofs/hol_light/aarch64/mldsa/mldsa_ntt.S)
 
 ### `REF`
 
@@ -284,6 +285,7 @@ source code and documentation.
   - [dev/aarch64_opt/src/ntt.S](dev/aarch64_opt/src/ntt.S)
   - [mldsa/src/native/aarch64/src/intt.S](mldsa/src/native/aarch64/src/intt.S)
   - [mldsa/src/native/aarch64/src/ntt.S](mldsa/src/native/aarch64/src/ntt.S)
+  - [proofs/hol_light/aarch64/mldsa/mldsa_ntt.S](proofs/hol_light/aarch64/mldsa/mldsa_ntt.S)
 
 ### `libmceliece`
 

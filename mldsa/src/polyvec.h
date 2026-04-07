@@ -540,6 +540,7 @@ __contract__(
     array_bound(p->vec[k1].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
 );
 
+#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
 #define mld_polyvecl_unpack_z MLD_NAMESPACE_KL(polyvecl_unpack_z)
 /*************************************************
  * Name:        mld_polyvecl_unpack_z
@@ -561,6 +562,7 @@ __contract__(
   ensures(forall(k1, 0, MLDSA_L,
     array_bound(z->vec[k1].coeffs, 0, MLDSA_N, -(MLDSA_GAMMA1 - 1), MLDSA_GAMMA1 + 1)))
 );
+#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 #define mld_polyveck_unpack_eta MLD_NAMESPACE_KL(polyveck_unpack_eta)
 /*************************************************

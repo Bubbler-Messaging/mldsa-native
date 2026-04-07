@@ -53,6 +53,13 @@
 #define mld_sk_t0hat_get_poly_eager \
   MLD_ADD_PARAM_SET(mld_sk_t0hat_get_poly_eager)
 #define mld_sk_t0hat_get_poly_lazy MLD_ADD_PARAM_SET(mld_sk_t0hat_get_poly_lazy)
+#define mld_zvec_eager MLD_ADD_PARAM_SET(mld_zvec_eager)
+#define mld_zvec_lazy MLD_ADD_PARAM_SET(mld_zvec_lazy)
+#define mld_zvec MLD_ADD_PARAM_SET(mld_zvec)
+#define mld_zvec_init_eager MLD_ADD_PARAM_SET(mld_zvec_init_eager)
+#define mld_zvec_init_lazy MLD_ADD_PARAM_SET(mld_zvec_init_lazy)
+#define mld_zvec_get_poly_eager MLD_ADD_PARAM_SET(mld_zvec_get_poly_eager)
+#define mld_zvec_get_poly_lazy MLD_ADD_PARAM_SET(mld_zvec_get_poly_lazy)
 #define mld_polymat MLD_ADD_PARAM_SET(mld_polymat)
 #define mld_polymat_eager MLD_ADD_PARAM_SET(mld_polymat_eager)
 #define mld_polymat_lazy MLD_ADD_PARAM_SET(mld_polymat_lazy)
@@ -66,6 +73,10 @@
   MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_eager)
 #define mld_polyvec_matrix_pointwise_montgomery_lazy \
   MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_lazy)
+#define mld_polyvec_matrix_pointwise_montgomery_zvec_eager \
+  MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_zvec_eager)
+#define mld_polyvec_matrix_pointwise_montgomery_zvec_lazy \
+  MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_zvec_lazy)
 #define mld_poly_permute_bitrev_to_custom_optional \
   MLD_ADD_PARAM_SET(mld_poly_permute_bitrev_to_custom_optional)
 /* End of parameter set namespacing */
@@ -207,6 +218,77 @@ static MLD_INLINE void mld_sk_t0hat_get_poly_lazy(mld_poly *buf,
 }
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
+/* zvec: z polynomial vector from a signature.
+ *
+ * The infinity-norm bound check on z and the (in-place) NTT of z are
+ * performed at the boundary between unpack and use:
+ *   - In eager mode, both happen in mld_zvec_init (the full vector is
+ *     already in memory at that point).
+ *   - In lazy mode, both happen in mld_zvec_get_poly per polynomial.
+ *
+ * Either may fail with MLD_ERR_FAIL if the norm bound is violated, so the
+ * matrix-vector multiplication helpers below need not repeat the check. */
+
+/* Eager: precompute and store the full unpacked vector */
+typedef struct
+{
+  mld_polyvecl vec;
+} mld_zvec_eager;
+
+/* Lazy: borrow packed data, unpack one polynomial on demand */
+typedef struct
+{
+  const uint8_t *packed;
+} mld_zvec_lazy;
+
+#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+MLD_MUST_CHECK_RETURN_VALUE
+static MLD_INLINE int mld_zvec_init_eager(
+    mld_zvec_eager *z,
+    const uint8_t packed_z[MLDSA_L * MLDSA_POLYZ_PACKEDBYTES])
+{
+  mld_polyvecl_unpack_z(&z->vec, packed_z);
+  if (mld_polyvecl_chknorm(&z->vec, MLDSA_GAMMA1 - MLDSA_BETA))
+  {
+    return MLD_ERR_FAIL;
+  }
+  mld_polyvecl_ntt(&z->vec);
+  return 0;
+}
+
+MLD_MUST_CHECK_RETURN_VALUE
+static MLD_INLINE int mld_zvec_get_poly_eager(mld_poly *buf,
+                                              const mld_zvec_eager *z,
+                                              unsigned int i)
+{
+  *buf = z->vec.vec[i];
+  return 0;
+}
+#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
+#if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+MLD_MUST_CHECK_RETURN_VALUE
+static MLD_INLINE int mld_zvec_init_lazy(
+    mld_zvec_lazy *z, const uint8_t packed_z[MLDSA_L * MLDSA_POLYZ_PACKEDBYTES])
+{
+  z->packed = packed_z;
+  return 0;
+}
+
+MLD_MUST_CHECK_RETURN_VALUE
+static MLD_INLINE int mld_zvec_get_poly_lazy(mld_poly *buf,
+                                             const mld_zvec_lazy *z,
+                                             unsigned int i)
+{
+  mld_polyz_unpack(buf, z->packed + i * MLDSA_POLYZ_PACKEDBYTES);
+  if (mld_poly_chknorm(buf, MLDSA_GAMMA1 - MLDSA_BETA))
+  {
+    return MLD_ERR_FAIL;
+  }
+  mld_poly_ntt(buf);
+  return 0;
+}
+#endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
+
 /* polymat */
 
 /* Eager: precompute and store full matrix */
@@ -317,6 +399,45 @@ __contract__(
   ensures(forall(k0, 0, MLDSA_K,
                  array_abs_bound(t->vec[k0].coeffs, 0, MLDSA_N, MLDSA_Q)))
 );
+
+/*************************************************
+ * Name:        mld_polyvec_matrix_pointwise_montgomery_zvec_eager
+ *
+ * Description: Verify-side matrix-vector multiplication for the z
+ *              polynomial vector. In eager mode, z has already had its
+ *              infinity-norm bound checked and been NTT'd by
+ *              mld_zvec_init_eager, so this is just a thin wrapper
+ *              around the standard matrix-vector multiplication
+ *              w = A * z (without invNTT). It always returns 0.
+ *
+ *              The scratch argument is unused in eager mode and exists
+ *              to keep a uniform signature with the lazy variant.
+ *
+ * Arguments:   - mld_polyveck *w: pointer to output vector
+ *              - mld_polymat_eager *mat: pointer to input matrix
+ *              - mld_zvec_eager *z: NTT'd z vector
+ *              - mld_poly *scratch: unused in eager mode
+ **************************************************/
+MLD_INTERNAL_API
+MLD_MUST_CHECK_RETURN_VALUE
+int mld_polyvec_matrix_pointwise_montgomery_zvec_eager(mld_polyveck *w,
+                                                       mld_polymat_eager *mat,
+                                                       mld_zvec_eager *z,
+                                                       mld_poly *scratch)
+__contract__(
+  requires(memory_no_alias(w, sizeof(mld_polyveck)))
+  requires(memory_no_alias(mat, sizeof(mld_polymat_eager)))
+  requires(memory_no_alias(z, sizeof(mld_zvec_eager)))
+  requires(memory_no_alias(scratch, sizeof(mld_poly)))
+  requires(forall(k1, 0, MLDSA_K, forall(l1, 0, MLDSA_L,
+    array_bound(mat->vec[k1].vec[l1].coeffs, 0, MLDSA_N, 0, MLDSA_Q))))
+  requires(forall(l2, 0, MLDSA_L,
+    array_abs_bound(z->vec.vec[l2].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+  assigns(memory_slice(w, sizeof(mld_polyveck)))
+  ensures(return_value == 0)
+  ensures(forall(k0, 0, MLDSA_K,
+    array_abs_bound(w->vec[k0].coeffs, 0, MLDSA_N, MLDSA_Q)))
+);
 #endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 #if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
@@ -328,6 +449,38 @@ MLD_INTERNAL_API
 void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
                                                   mld_polymat_lazy *mat,
                                                   const mld_polyvecl *v);
+
+/*************************************************
+ * Name:        mld_polyvec_matrix_pointwise_montgomery_zvec_lazy
+ *
+ * Description: Verify-side matrix-vector multiplication for the z
+ *              polynomial vector.
+ *
+ *              In lazy mode, z polynomials are unpacked one at a time
+ *              into the caller-provided scratch buffer via
+ *              mld_zvec_get_poly_lazy, which also performs the per-poly
+ *              infinity-norm bound check and NTT. For each l, this
+ *              function then accumulates A[*,l] * NTT(z[l]) into the
+ *              output vector w (column-by-column over the matrix).
+ *
+ *              Matrix elements are sampled on demand via mat. The
+ *              internal mat->tmp scratch is reused for the per-row
+ *              pointwise products.
+ *
+ *              Returns MLD_ERR_FAIL if any norm check on z[l] fails,
+ *              0 on success.
+ *
+ * Arguments:   - mld_polyveck *w: pointer to output vector
+ *              - mld_polymat_lazy *mat: pointer to (lazy) input matrix
+ *              - mld_zvec_lazy *z: lazy z vector to be unpacked
+ *              - mld_poly *scratch: scratch polynomial for one z entry
+ **************************************************/
+MLD_INTERNAL_API
+MLD_MUST_CHECK_RETURN_VALUE
+int mld_polyvec_matrix_pointwise_montgomery_zvec_lazy(mld_polyveck *w,
+                                                      mld_polymat_lazy *mat,
+                                                      mld_zvec_lazy *z,
+                                                      mld_poly *scratch);
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 /* Dispatch: typedef and define based on MLD_CONFIG_REDUCE_RAM */
@@ -335,6 +488,7 @@ void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
 typedef mld_sk_s1hat_lazy mld_sk_s1hat;
 typedef mld_sk_s2hat_lazy mld_sk_s2hat;
 typedef mld_sk_t0hat_lazy mld_sk_t0hat;
+typedef mld_zvec_lazy mld_zvec;
 typedef mld_polymat_lazy mld_polymat;
 #define mld_unpack_sk_s1hat mld_unpack_sk_s1hat_lazy
 #define mld_sk_s1hat_get_poly mld_sk_s1hat_get_poly_lazy
@@ -342,13 +496,18 @@ typedef mld_polymat_lazy mld_polymat;
 #define mld_sk_s2hat_get_poly mld_sk_s2hat_get_poly_lazy
 #define mld_unpack_sk_t0hat mld_unpack_sk_t0hat_lazy
 #define mld_sk_t0hat_get_poly mld_sk_t0hat_get_poly_lazy
+#define mld_zvec_init mld_zvec_init_lazy
+#define mld_zvec_get_poly mld_zvec_get_poly_lazy
 #define mld_polyvec_matrix_expand mld_polyvec_matrix_expand_lazy
 #define mld_polyvec_matrix_pointwise_montgomery \
   mld_polyvec_matrix_pointwise_montgomery_lazy
+#define mld_polyvec_matrix_pointwise_montgomery_zvec \
+  mld_polyvec_matrix_pointwise_montgomery_zvec_lazy
 #else /* MLD_CONFIG_REDUCE_RAM */
 typedef mld_sk_s1hat_eager mld_sk_s1hat;
 typedef mld_sk_s2hat_eager mld_sk_s2hat;
 typedef mld_sk_t0hat_eager mld_sk_t0hat;
+typedef mld_zvec_eager mld_zvec;
 typedef mld_polymat_eager mld_polymat;
 #define mld_unpack_sk_s1hat mld_unpack_sk_s1hat_eager
 #define mld_sk_s1hat_get_poly mld_sk_s1hat_get_poly_eager
@@ -356,9 +515,13 @@ typedef mld_polymat_eager mld_polymat;
 #define mld_sk_s2hat_get_poly mld_sk_s2hat_get_poly_eager
 #define mld_unpack_sk_t0hat mld_unpack_sk_t0hat_eager
 #define mld_sk_t0hat_get_poly mld_sk_t0hat_get_poly_eager
+#define mld_zvec_init mld_zvec_init_eager
+#define mld_zvec_get_poly mld_zvec_get_poly_eager
 #define mld_polyvec_matrix_expand mld_polyvec_matrix_expand_eager
 #define mld_polyvec_matrix_pointwise_montgomery \
   mld_polyvec_matrix_pointwise_montgomery_eager
+#define mld_polyvec_matrix_pointwise_montgomery_zvec \
+  mld_polyvec_matrix_pointwise_montgomery_zvec_eager
 #endif /* !MLD_CONFIG_REDUCE_RAM */
 
 #endif /* !MLD_POLYVEC_LAZY_H */

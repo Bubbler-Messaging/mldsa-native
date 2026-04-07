@@ -584,6 +584,7 @@ void mld_polyvecl_unpack_eta(
                       MLDSA_ETA + 1);
 }
 
+#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
 MLD_INTERNAL_API
 void mld_polyvecl_unpack_z(mld_polyvecl *z,
                            const uint8_t r[MLDSA_L * MLDSA_POLYZ_PACKEDBYTES])
@@ -597,6 +598,7 @@ void mld_polyvecl_unpack_z(mld_polyvecl *z,
   mld_assert_bound_2d(z->vec, MLDSA_L, MLDSA_N, -(MLDSA_GAMMA1 - 1),
                       MLDSA_GAMMA1 + 1);
 }
+#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 MLD_INTERNAL_API
 void mld_polyveck_unpack_eta(

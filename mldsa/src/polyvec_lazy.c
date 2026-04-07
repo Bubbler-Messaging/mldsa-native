@@ -200,6 +200,19 @@ void mld_polyvec_matrix_pointwise_montgomery_eager(mld_polyveck *t,
   mld_assert_abs_bound_2d(t->vec, MLDSA_K, MLDSA_N, MLDSA_Q);
 }
 
+MLD_INTERNAL_API
+int mld_polyvec_matrix_pointwise_montgomery_zvec_eager(mld_polyveck *w,
+                                                       mld_polymat_eager *mat,
+                                                       mld_zvec_eager *z,
+                                                       mld_poly *scratch)
+{
+  /* The infinity-norm bound check on z and the NTT of z have already
+   * been performed in mld_zvec_init_eager. */
+  (void)scratch;
+  mld_polyvec_matrix_pointwise_montgomery_eager(w, mat, &z->vec);
+  return 0;
+}
+
 #endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 #if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
@@ -230,6 +243,40 @@ void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
     }
     mld_poly_reduce(&t->vec[i]);
   }
+}
+
+MLD_INTERNAL_API
+int mld_polyvec_matrix_pointwise_montgomery_zvec_lazy(mld_polyveck *w,
+                                                      mld_polymat_lazy *mat,
+                                                      mld_zvec_lazy *z,
+                                                      mld_poly *scratch)
+{
+  unsigned int k, l;
+
+  for (l = 0; l < MLDSA_L; l++)
+  {
+    /* mld_zvec_get_poly_lazy unpacks z[l], performs the per-poly
+     * infinity-norm bound check, and NTTs scratch in place. */
+    if (mld_zvec_get_poly_lazy(scratch, z, l))
+    {
+      return MLD_ERR_FAIL;
+    }
+    for (k = 0; k < MLDSA_K; k++)
+    {
+      const mld_poly *a_kl = mld_polymat_get_poly_lazy(mat, k, l);
+      if (l == 0)
+      {
+        mld_poly_pointwise_montgomery(&w->vec[k], a_kl, scratch);
+      }
+      else
+      {
+        mld_poly_pointwise_montgomery(&mat->tmp, a_kl, scratch);
+        mld_poly_add(&w->vec[k], &mat->tmp);
+      }
+    }
+  }
+  mld_polyveck_reduce(w);
+  return 0;
 }
 
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */

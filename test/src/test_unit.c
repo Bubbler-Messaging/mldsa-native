@@ -764,6 +764,31 @@ static int test_backend_units(void)
           MLD_USE_NATIVE_POLYZ_UNPACK_17 || MLD_USE_NATIVE_POLYZ_UNPACK_19 ||  \
           MLD_USE_FIPS202_X1_NATIVE || MLD_USE_FIPS202_X4_NATIVE */
 
+/* Generate a random polyvecl with all coefficients in
+ * [-(MLDSA_GAMMA1 - MLDSA_BETA - 1), MLDSA_GAMMA1 - MLDSA_BETA - 1]
+ * and bit-pack it into MLDSA_L * MLDSA_POLYZ_PACKEDBYTES, so that the
+ * encoded data passes the chknorm bound used by mld_zvec_init/get_poly. */
+static void random_valid_packed_z(
+    uint8_t packed[MLDSA_L * MLDSA_POLYZ_PACKEDBYTES])
+{
+  unsigned int i, j;
+  mld_polyvecl z;
+  const int32_t bound = MLDSA_GAMMA1 - MLDSA_BETA;
+  const int32_t modulus = 2 * bound - 1;
+  randombytes((uint8_t *)&z, sizeof(z));
+  for (i = 0; i < MLDSA_L; i++)
+  {
+    for (j = 0; j < MLDSA_N; j++)
+    {
+      int32_t c = z.vec[i].coeffs[j];
+      /* Map to [-(bound - 1), bound - 1] */
+      c = ((c % modulus) + modulus) % modulus - (bound - 1);
+      z.vec[i].coeffs[j] = c;
+    }
+    mld_polyz_pack(packed + i * MLDSA_POLYZ_PACKEDBYTES, &z.vec[i]);
+  }
+}
+
 /* Test that eager and lazy polyvec init+get produce the same results */
 static int test_polyvec_lazy_eager(void)
 {
@@ -771,6 +796,7 @@ static int test_polyvec_lazy_eager(void)
   uint8_t packed_s1[MLDSA_L * MLDSA_POLYETA_PACKEDBYTES];
   uint8_t packed_s2[MLDSA_K * MLDSA_POLYETA_PACKEDBYTES];
   uint8_t packed_t0[MLDSA_K * MLDSA_POLYT0_PACKEDBYTES];
+  uint8_t packed_z[MLDSA_L * MLDSA_POLYZ_PACKEDBYTES];
   uint8_t rho[MLDSA_SEEDBYTES];
   mld_sk_s1hat_eager s1_eager;
   mld_sk_s1hat_lazy s1_lazy;
@@ -778,11 +804,13 @@ static int test_polyvec_lazy_eager(void)
   mld_sk_s2hat_lazy s2_lazy;
   mld_sk_t0hat_eager t0_eager;
   mld_sk_t0hat_lazy t0_lazy;
-  mld_poly poly_eager, poly_lazy;
+  mld_zvec_eager z_eager;
+  mld_zvec_lazy z_lazy;
+  mld_poly poly_eager, poly_lazy, scratch_eager, scratch_lazy;
   mld_polymat_eager mat_eager;
   mld_polymat_lazy mat_lazy;
   mld_polyvecl v;
-  mld_polyveck tk_eager, tk_lazy;
+  mld_polyveck tk_eager, tk_lazy, w_eager, w_lazy;
 
   for (t = 0; t < NUM_RANDOM_TESTS_SLOW; t++)
   {
@@ -821,6 +849,18 @@ static int test_polyvec_lazy_eager(void)
       mld_sk_t0hat_get_poly_lazy(&poly_lazy, &t0_lazy, i);
       CHECK(memcmp(&poly_eager, &poly_lazy, sizeof(mld_poly)) == 0);
     }
+
+    /* Test zvec: eager vs lazy */
+    random_valid_packed_z(packed_z);
+    CHECK(mld_zvec_init_eager(&z_eager, packed_z) == 0);
+    CHECK(mld_zvec_init_lazy(&z_lazy, packed_z) == 0);
+
+    for (i = 0; i < MLDSA_L; i++)
+    {
+      CHECK(mld_zvec_get_poly_eager(&poly_eager, &z_eager, i) == 0);
+      CHECK(mld_zvec_get_poly_lazy(&poly_lazy, &z_lazy, i) == 0);
+      CHECK(memcmp(&poly_eager, &poly_lazy, sizeof(mld_poly)) == 0);
+    }
   }
 
   /* Test matrix expand + pointwise: eager vs lazy.
@@ -849,6 +889,31 @@ static int test_polyvec_lazy_eager(void)
     mld_polyveck_caddq(&tk_eager);
     mld_polyveck_caddq(&tk_lazy);
     CHECK(memcmp(&tk_eager, &tk_lazy, sizeof(mld_polyveck)) == 0);
+  }
+
+  /* Test the fused matrix-vector multiplication helper for z:
+   * eager and lazy variants must agree on w = A * NTT(z). */
+  for (t = 0; t < NUM_RANDOM_TESTS_SLOW; t++)
+  {
+    randombytes(rho, sizeof(rho));
+    mld_polyvec_matrix_expand_eager(&mat_eager, rho);
+    mld_polyvec_matrix_expand_lazy(&mat_lazy, rho);
+
+    random_valid_packed_z(packed_z);
+    CHECK(mld_zvec_init_eager(&z_eager, packed_z) == 0);
+    CHECK(mld_zvec_init_lazy(&z_lazy, packed_z) == 0);
+
+    CHECK(mld_polyvec_matrix_pointwise_montgomery_zvec_eager(
+              &w_eager, &mat_eager, &z_eager, &scratch_eager) == 0);
+    CHECK(mld_polyvec_matrix_pointwise_montgomery_zvec_lazy(
+              &w_lazy, &mat_lazy, &z_lazy, &scratch_lazy) == 0);
+
+    /* Compare mod q */
+    mld_polyveck_reduce(&w_eager);
+    mld_polyveck_reduce(&w_lazy);
+    mld_polyveck_caddq(&w_eager);
+    mld_polyveck_caddq(&w_lazy);
+    CHECK(memcmp(&w_eager, &w_lazy, sizeof(mld_polyveck)) == 0);
   }
 
   return 0;

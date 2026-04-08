@@ -261,9 +261,9 @@
 #undef mld_memset
 /* mldsa/src/packing.h */
 #undef MLD_PACKING_H
+#undef mld_make_pack_sig_h_poly
 #undef mld_pack_pk
 #undef mld_pack_sig_c
-#undef mld_pack_sig_h_poly
 #undef mld_pack_sig_z
 #undef mld_pack_sk
 #undef mld_unpack_pk
@@ -302,7 +302,6 @@
 #undef MLD_POLY_KL_H
 #undef mld_poly_challenge
 #undef mld_poly_decompose
-#undef mld_poly_make_hint
 #undef mld_poly_uniform_eta
 #undef mld_poly_uniform_eta_4x
 #undef mld_poly_uniform_gamma1

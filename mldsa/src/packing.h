@@ -87,29 +87,41 @@ __contract__(
   assigns(memory_slice(sig, MLDSA_CRYPTO_BYTES))
 );
 
-#define mld_pack_sig_h_poly MLD_NAMESPACE_KL(pack_sig_h_poly)
+#define mld_make_pack_sig_h_poly MLD_NAMESPACE_KL(make_pack_sig_h_poly)
 /*************************************************
- * Name:        mld_pack_sig_h_poly
+ * Name:        mld_make_pack_sig_h_poly
  *
- * Description: Pack hints for one polynomial into the hint section of sig.
+ * Description: Compute hints for one polynomial of (w0, w1) and pack them
+ *              into the hint section of sig.
  *              Must be called once per polynomial in order k = 0, ..., K-1.
  *              The hint section of sig must be zeroed before the first call.
  *
  * Arguments:   - uint8_t sig[]: byte array containing signature
- *              - const mld_poly *h: pointer to hint polynomial (0/1 coeffs)
+ *              - const mld_poly *a0: pointer to low part of input polynomial
+ *              - const mld_poly *a1: pointer to high part of input polynomial
  *              - unsigned int k: index of polynomial in vector (0..K-1)
  *              - unsigned int n: total number of hints written so far
+ *
+ * Returns:     - the updated running tally of hints (non-negative, at most
+ *                MLDSA_OMEGA) on success;
+ *              - MLD_ERR_FAIL if writing all hints for this polynomial
+ *                would exceed MLDSA_OMEGA. In this case the caller must
+ *                reject the signature.
  **************************************************/
 MLD_INTERNAL_API
-void mld_pack_sig_h_poly(uint8_t sig[MLDSA_CRYPTO_BYTES], const mld_poly *h,
-                         unsigned int k, unsigned int n)
+MLD_MUST_CHECK_RETURN_VALUE
+int mld_make_pack_sig_h_poly(uint8_t sig[MLDSA_CRYPTO_BYTES],
+                             const mld_poly *a0, const mld_poly *a1,
+                             unsigned int k, unsigned int n)
 __contract__(
   requires(memory_no_alias(sig, MLDSA_CRYPTO_BYTES))
-  requires(memory_no_alias(h, sizeof(mld_poly)))
+  requires(memory_no_alias(a0, sizeof(mld_poly)))
+  requires(memory_no_alias(a1, sizeof(mld_poly)))
   requires(k < MLDSA_K)
   requires(n <= MLDSA_OMEGA)
-  requires(array_bound(h->coeffs, 0, MLDSA_N, 0, 2))
   assigns(memory_slice(sig, MLDSA_CRYPTO_BYTES))
+  ensures(return_value == MLD_ERR_FAIL ||
+          (return_value >= 0 && return_value <= MLDSA_OMEGA))
 );
 
 #define mld_pack_sig_z MLD_NAMESPACE_KL(pack_sig_z)
@@ -118,7 +130,7 @@ __contract__(
  *
  * Description: Bit-pack single polynomial of z component of sig = (c, z, h).
  *              The c and h components are packed separately using
- *              mld_pack_sig_c and mld_pack_sig_h_poly.
+ *              mld_pack_sig_c and mld_make_pack_sig_h_poly.
  *
  * Arguments:   - uint8_t sig[]: output byte array
  *              - const mld_poly *zi: pointer to a single polynomial in z

@@ -4,11 +4,11 @@
 include ../Makefile_params.common
 
 HARNESS_ENTRY = harness
-HARNESS_FILE = pack_sig_h_poly_harness
+HARNESS_FILE = make_pack_sig_h_poly_harness
 
 # This should be a unique identifier for this proof, and will appear on the
 # Litani dashboard. It can be human-readable and contain spaces if you wish.
-PROOF_UID = pack_sig_h_poly
+PROOF_UID = make_pack_sig_h_poly
 
 DEFINES +=
 INCLUDES +=
@@ -19,8 +19,8 @@ UNWINDSET +=
 PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
 PROJECT_SOURCES += $(SRCDIR)/mldsa/src/packing.c
 
-CHECK_FUNCTION_CONTRACTS=mld_pack_sig_h_poly
-USE_FUNCTION_CONTRACTS=
+CHECK_FUNCTION_CONTRACTS=mld_make_pack_sig_h_poly
+USE_FUNCTION_CONTRACTS=mld_make_hint
 APPLY_LOOP_CONTRACTS=on
 USE_DYNAMIC_FRAMES=1
 
@@ -29,7 +29,7 @@ EXTERNAL_SAT_SOLVER=
 CBMCFLAGS=--external-smt2-solver $(PROOF_ROOT)/lib/z3_no_bv_extract --z3
 CBMCFLAGS+=--slice-formula
 
-FUNCTION_NAME = pack_sig_h_poly
+FUNCTION_NAME = make_pack_sig_h_poly
 
 # If this proof is found to consume huge amounts of RAM, you can set the
 # EXPENSIVE variable. With new enough versions of the proof tools, this will

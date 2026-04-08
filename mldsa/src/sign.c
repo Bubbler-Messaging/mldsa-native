@@ -728,22 +728,18 @@ __contract__(
   n = 0;
   for (k = 0; k < MLDSA_K; k++)
   __loop__(
-    assigns(k, n,
-            memory_slice(z, sizeof(mld_poly)),
-            memory_slice(sig, MLDSA_CRYPTO_BYTES))
+    assigns(k, n, ret, memory_slice(sig, MLDSA_CRYPTO_BYTES))
     invariant(k <= MLDSA_K)
     invariant(n <= MLDSA_OMEGA)
     decreases(MLDSA_K - k)
   )
   {
-    unsigned int hints = mld_poly_make_hint(z, &w0->vec[k], &w1->vec[k]);
-    if (n + hints > MLDSA_OMEGA)
+    ret = mld_make_pack_sig_h_poly(sig, &w0->vec[k], &w1->vec[k], k, n);
+    if (ret == MLD_ERR_FAIL)
     {
-      ret = MLD_ERR_FAIL; /* reject */
       goto cleanup;
     }
-    mld_pack_sig_h_poly(sig, z, k, n);
-    n += hints;
+    n = (unsigned int)ret;
   }
 
   /* Constant time: At this point it is clear that the signature is valid - it

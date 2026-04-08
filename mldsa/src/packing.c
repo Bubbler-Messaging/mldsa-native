@@ -8,6 +8,7 @@
 #include "packing.h"
 #include "poly.h"
 #include "polyvec.h"
+#include "rounding.h"
 
 /* Parameter set namespacing
  * This is to facilitate building multiple instances
@@ -107,8 +108,9 @@ void mld_pack_sig_c(uint8_t sig[MLDSA_CRYPTO_BYTES],
 }
 
 MLD_INTERNAL_API
-void mld_pack_sig_h_poly(uint8_t sig[MLDSA_CRYPTO_BYTES], const mld_poly *h,
-                         unsigned int k, unsigned int n)
+int mld_make_pack_sig_h_poly(uint8_t sig[MLDSA_CRYPTO_BYTES],
+                             const mld_poly *a0, const mld_poly *a1,
+                             unsigned int k, unsigned int n)
 {
   unsigned int j;
 
@@ -119,11 +121,16 @@ void mld_pack_sig_h_poly(uint8_t sig[MLDSA_CRYPTO_BYTES], const mld_poly *h,
    * that are not equal to 0.
    *
    * The final K bytes record a running tally of the number of hints
-   * coming from each of the K polynomials in h. */
+   * coming from each of the K polynomials. */
   uint8_t *sig_h = sig + MLDSA_CTILDEBYTES + MLDSA_L * MLDSA_POLYZ_PACKEDBYTES;
 
-  /* For each coefficient in this polynomial, record it as a hint */
-  /* if its value is not zero. */
+  /* For each coefficient in this polynomial, compute its hint bit and, if
+   * non-zero, record the index in the hint section of sig. If recording the
+   * hint would overflow the OMEGA-sized index array, abort early and return
+   * MLD_ERR_FAIL. The caller is expected to reject the signature in that case.
+   *
+   * Constant time: At this point a0/a1 are public (see comment in sign.c
+   * before the call), so a data-dependent early return is fine. */
   for (j = 0; j < MLDSA_N; j++)
   __loop__(
     assigns(j, n, memory_slice(sig_h, MLDSA_POLYVECH_PACKEDBYTES))
@@ -132,12 +139,13 @@ void mld_pack_sig_h_poly(uint8_t sig[MLDSA_CRYPTO_BYTES], const mld_poly *h,
     decreases(MLDSA_N - j)
   )
   {
-    /* The reference implementation implicitly relies on the total */
-    /* number of hints being less than OMEGA, assuming h is valid. */
-    /* In mldsa-native, we check this explicitly to ease proof of  */
-    /* type safety.                                                */
-    if (h->coeffs[j] != 0 && n < MLDSA_OMEGA)
+    const unsigned int hint_bit = mld_make_hint(a0->coeffs[j], a1->coeffs[j]);
+    if (hint_bit)
     {
+      if (n == MLDSA_OMEGA)
+      {
+        return MLD_ERR_FAIL;
+      }
       sig_h[n] = (uint8_t)j;
       n++;
     }
@@ -145,6 +153,7 @@ void mld_pack_sig_h_poly(uint8_t sig[MLDSA_CRYPTO_BYTES], const mld_poly *h,
   /* Record the running tally into the correct slot for this     */
   /* polynomial in the final K bytes.                            */
   sig_h[MLDSA_OMEGA + k] = (uint8_t)n;
+  return (int)n;
 }
 
 MLD_INTERNAL_API

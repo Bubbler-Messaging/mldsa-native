@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775640100791,
+  "lastUpdate": 1775640104757,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -466468,6 +466468,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 320050,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "Anders.Sonmark@axis.com",
+            "name": "Anders Sonmark",
+            "username": "flynd"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "9c62dedc9b855a049eaf0d58f6bb0089a6ac35fd",
+          "message": "aarch64/src/polyz_unpack_table.c: Disable unused tables\n\nOnly one table is used for each parameter set, so add conditions to\nremove the unused table from non-shared builds.\n\nSigned-off-by: Anders Sonmark <Anders.Sonmark@axis.com>",
+          "timestamp": "2026-04-08T17:15:51+08:00",
+          "tree_id": "7c8887cca34097f41b385d686dcdaf52c60cf51e",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/9c62dedc9b855a049eaf0d58f6bb0089a6ac35fd"
+        },
+        "date": 1775639934297,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 113260,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 357322,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 117963,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 196626,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 588304,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 194593,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 322292,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 755037,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 320066,
             "unit": "cycles"
           }
         ]

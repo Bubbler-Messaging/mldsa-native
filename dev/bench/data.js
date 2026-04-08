@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775629327003,
+  "lastUpdate": 1775629363159,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -489029,6 +489029,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 618377,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jakemas@amazon.com",
+            "name": "Jake Massimo",
+            "username": "jakemas"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "e9c0f60522607ab20cfa7bc890520512ccbfa834",
+          "message": "Add HOL Light pointwise multiplication proofs for AArch64 and x86_64\n\nPort the ML-DSA pointwise polynomial multiplication (Montgomery form)\nand its HOL Light proofs of correctness from s2n-bignum to mldsa-native,\nfor both AArch64 (NEON) and x86_64 (AVX2).\n\nThe proofs verify the assembly implementations at the object-code level,\nshowing that output coefficients are congruent to the pointwise product\nof the inputs modulo Q=8380417, with bounded output coefficients\n(|output| <= Q-1). For AArch64, a constant-time and memory safety proof\nis also included.\n\nPorted from s2n-bignum commit ca6ec31a225a.\n\nSigned-off-by: Jake Massimo <jakemas@amazon.com>\nSigned-off-by: Ubuntu <ubuntu@ip-172-31-29-57.us-west-2.compute.internal>",
+          "timestamp": "2026-04-08T14:16:13+08:00",
+          "tree_id": "22ea6223c1546ae8b2b9a949db9203928321d20a",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/e9c0f60522607ab20cfa7bc890520512ccbfa834"
+        },
+        "date": 1775629362660,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 212753,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 762647,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 234529,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 379748,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 1257979,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 371741,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 604632,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 1599150,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 618867,
             "unit": "cycles"
           }
         ]

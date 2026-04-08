@@ -25,6 +25,7 @@ typedef struct
 } mld_polyvecl;
 
 
+#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
 #define mld_polyvecl_uniform_gamma1 MLD_NAMESPACE_KL(polyvecl_uniform_gamma1)
 /*************************************************
  * Name:        mld_polyvecl_uniform_gamma1
@@ -50,6 +51,7 @@ __contract__(
   ensures(forall(k0, 0, MLDSA_L,
     array_bound(v->vec[k0].coeffs, 0, MLDSA_N, -(MLDSA_GAMMA1 - 1), MLDSA_GAMMA1 + 1)))
 );
+#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 #define mld_polyvecl_ntt MLD_NAMESPACE_KL(polyvecl_ntt)
 /*************************************************

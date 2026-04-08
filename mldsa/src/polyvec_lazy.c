@@ -200,6 +200,18 @@ void mld_polyvec_matrix_pointwise_montgomery_eager(mld_polyveck *t,
   mld_assert_abs_bound_2d(t->vec, MLDSA_K, MLDSA_N, MLDSA_Q);
 }
 
+MLD_INTERNAL_API
+void mld_polyvec_matrix_pointwise_montgomery_yvec_eager(mld_polyveck *w,
+                                                        mld_polymat_eager *mat,
+                                                        const mld_yvec_eager *y,
+                                                        mld_polyvecl *scratch)
+{
+  *scratch = y->vec;
+  mld_polyvecl_ntt(scratch);
+  mld_polyvec_matrix_pointwise_montgomery_eager(w, mat, scratch);
+  mld_polyveck_invntt_tomont(w);
+}
+
 #endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 #if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
@@ -230,6 +242,43 @@ void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
     }
     mld_poly_reduce(&t->vec[i]);
   }
+}
+
+MLD_INTERNAL_API
+void mld_polyvec_matrix_pointwise_montgomery_yvec_lazy(mld_polyveck *w,
+                                                       mld_polymat_lazy *mat,
+                                                       const mld_yvec_lazy *y,
+                                                       mld_polyvecl *scratch)
+{
+  unsigned int k, l;
+  /* Only the first poly of the polyvecl scratch is used. The polyvecl type
+   * matches the eager variant for API uniformity; in REDUCE_RAM mode the
+   * polyvecl storage is provided "for free" by the caller's polyveck/polyvecl
+   * union. */
+  mld_poly *y_ntt = &scratch->vec[0];
+
+  /* Column-by-column: sample y[l], NTT, accumulate column l of A into w. */
+  for (l = 0; l < MLDSA_L; l++)
+  {
+    mld_yvec_get_poly_lazy(y_ntt, y, l);
+    mld_poly_ntt(y_ntt);
+    for (k = 0; k < MLDSA_K; k++)
+    {
+      const mld_poly *a_kl = mld_polymat_get_poly_lazy(mat, k, l);
+      if (l == 0)
+      {
+        mld_poly_pointwise_montgomery(&w->vec[k], a_kl, y_ntt);
+      }
+      else
+      {
+        mld_poly_pointwise_montgomery(&mat->tmp, a_kl, y_ntt);
+        mld_poly_add(&w->vec[k], &mat->tmp);
+      }
+    }
+  }
+
+  mld_polyveck_reduce(w);
+  mld_polyveck_invntt_tomont(w);
 }
 
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */

@@ -25,6 +25,7 @@
 /**************************************************************/
 /************ Vectors of polynomials of length MLDSA_L **************/
 /**************************************************************/
+#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
 MLD_INTERNAL_API
 void mld_polyvecl_uniform_gamma1(mld_polyvecl *v,
                                  const uint8_t seed[MLDSA_CRHBYTES],
@@ -67,6 +68,7 @@ void mld_polyvecl_uniform_gamma1(mld_polyvecl *v,
   mld_assert_bound_2d(v->vec, MLDSA_L, MLDSA_N, -(MLDSA_GAMMA1 - 1),
                       MLDSA_GAMMA1 + 1);
 }
+#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 MLD_INTERNAL_API
 void mld_polyvecl_ntt(mld_polyvecl *v)

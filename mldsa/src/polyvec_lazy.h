@@ -66,6 +66,10 @@
   MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_eager)
 #define mld_polyvec_matrix_pointwise_montgomery_lazy \
   MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_lazy)
+#define mld_polyvecl_pointwise_acc_montgomery_eager \
+  MLD_NAMESPACE_KL(polyvecl_pointwise_acc_montgomery_eager)
+#define mld_polyvecl_pointwise_acc_montgomery_lazy \
+  MLD_NAMESPACE_KL(polyvecl_pointwise_acc_montgomery_lazy)
 #define mld_poly_permute_bitrev_to_custom_optional \
   MLD_ADD_PARAM_SET(mld_poly_permute_bitrev_to_custom_optional)
 /* End of parameter set namespacing */
@@ -317,6 +321,41 @@ __contract__(
   ensures(forall(k0, 0, MLDSA_K,
                  array_abs_bound(t->vec[k0].coeffs, 0, MLDSA_N, MLDSA_Q)))
 );
+
+/*************************************************
+ * Name:        mld_polyvecl_pointwise_acc_montgomery_eager
+ *
+ * Description: Compute one row of the matrix-vector multiplication
+ *              w = (A * v)[k] in NTT domain. The matrix is the eager
+ *              precomputed matrix from mld_polyvec_matrix_expand_eager,
+ *              the vector is in NTT domain.
+ *
+ *              Pointwise multiplies row k of A with v, accumulates,
+ *              and multiplies by 2^{-32}. Dispatches to the native
+ *              implementation when available.
+ *
+ * Arguments:   - mld_poly *w: pointer to output polynomial w (row k of A*v)
+ *              - const mld_polymat_eager *mat: pointer to input matrix
+ *              - unsigned int k: row index, must be < MLDSA_K
+ *              - const mld_polyvecl *v: pointer to input vector v
+ **************************************************/
+MLD_INTERNAL_API
+void mld_polyvecl_pointwise_acc_montgomery_eager(mld_poly *w,
+                                                 const mld_polymat_eager *mat,
+                                                 unsigned int k,
+                                                 const mld_polyvecl *v)
+__contract__(
+  requires(memory_no_alias(w, sizeof(mld_poly)))
+  requires(memory_no_alias(mat, sizeof(mld_polymat_eager)))
+  requires(memory_no_alias(v, sizeof(mld_polyvecl)))
+  requires(k < MLDSA_K)
+  requires(forall(l0, 0, MLDSA_L,
+                  array_bound(mat->vec[k].vec[l0].coeffs, 0, MLDSA_N, 0, MLDSA_Q)))
+  requires(forall(l1, 0, MLDSA_L,
+    array_abs_bound(v->vec[l1].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+  assigns(memory_slice(w, sizeof(mld_poly)))
+  ensures(array_abs_bound(w->coeffs, 0, MLDSA_N, MLDSA_Q))
+);
 #endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 #if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
@@ -328,6 +367,28 @@ MLD_INTERNAL_API
 void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
                                                   mld_polymat_lazy *mat,
                                                   const mld_polyvecl *v);
+
+/*************************************************
+ * Name:        mld_polyvecl_pointwise_acc_montgomery_lazy
+ *
+ * Description: Compute one row of the matrix-vector multiplication
+ *              w = (A * v)[k] in NTT domain. The matrix is sampled
+ *              on-the-fly from mat->rho via per-element rejection
+ *              sampling, the vector is in NTT domain.
+ *
+ *              Uses the internal mat->tmp scratch for the per-column
+ *              pointwise products.
+ *
+ * Arguments:   - mld_poly *w: pointer to output polynomial w (row k of A*v)
+ *              - mld_polymat_lazy *mat: pointer to (lazy) input matrix
+ *              - unsigned int k: row index, must be < MLDSA_K
+ *              - const mld_polyvecl *v: pointer to input vector v
+ **************************************************/
+MLD_INTERNAL_API
+void mld_polyvecl_pointwise_acc_montgomery_lazy(mld_poly *w,
+                                                mld_polymat_lazy *mat,
+                                                unsigned int k,
+                                                const mld_polyvecl *v);
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 /* Dispatch: typedef and define based on MLD_CONFIG_REDUCE_RAM */
@@ -345,6 +406,8 @@ typedef mld_polymat_lazy mld_polymat;
 #define mld_polyvec_matrix_expand mld_polyvec_matrix_expand_lazy
 #define mld_polyvec_matrix_pointwise_montgomery \
   mld_polyvec_matrix_pointwise_montgomery_lazy
+#define mld_polyvecl_pointwise_acc_montgomery \
+  mld_polyvecl_pointwise_acc_montgomery_lazy
 #else /* MLD_CONFIG_REDUCE_RAM */
 typedef mld_sk_s1hat_eager mld_sk_s1hat;
 typedef mld_sk_s2hat_eager mld_sk_s2hat;
@@ -359,6 +422,8 @@ typedef mld_polymat_eager mld_polymat;
 #define mld_polyvec_matrix_expand mld_polyvec_matrix_expand_eager
 #define mld_polyvec_matrix_pointwise_montgomery \
   mld_polyvec_matrix_pointwise_montgomery_eager
+#define mld_polyvecl_pointwise_acc_montgomery \
+  mld_polyvecl_pointwise_acc_montgomery_eager
 #endif /* !MLD_CONFIG_REDUCE_RAM */
 
 #endif /* !MLD_POLYVEC_LAZY_H */

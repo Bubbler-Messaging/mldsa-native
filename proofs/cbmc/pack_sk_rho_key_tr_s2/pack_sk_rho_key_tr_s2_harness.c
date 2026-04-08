@@ -6,7 +6,7 @@
 
 void harness(void)
 {
-  uint8_t *a, *b;
-  mld_polyveck *c;
-  mld_pack_pk(a, b, c);
+  uint8_t *a, *b, *c, *d;
+  mld_polyveck *s2;
+  mld_pack_sk_rho_key_tr_s2(a, b, c, d, s2);
 }

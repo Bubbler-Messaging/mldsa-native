@@ -573,8 +573,12 @@ static int test_polyvecl_pointwise_acc_montgomery_core(const mld_polyvecl *u,
                                                        const char *test_name)
 {
   mld_poly test_w, ref_w;
+  mld_polymat_eager mat;
 
-  mld_polyvecl_pointwise_acc_montgomery(&test_w, u, v);
+  /* The eager wrapper takes (mat, k, v); place u at row 0 of a synthetic
+   * polymat and call it with k = 0. */
+  mat.vec[0] = *u;
+  mld_polyvecl_pointwise_acc_montgomery_eager(&test_w, &mat, 0, v);
   mld_polyvecl_pointwise_acc_montgomery_c(&ref_w, u, v);
 
   CHECK(compare_i32_arrays(test_w.coeffs, ref_w.coeffs, MLDSA_N, test_name,

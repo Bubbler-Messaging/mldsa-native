@@ -48,9 +48,7 @@
 #define mld_compute_pack_z MLD_ADD_PARAM_SET(mld_compute_pack_z)
 #define mld_attempt_signature_generation \
   MLD_ADD_PARAM_SET(mld_attempt_signature_generation) MLD_CONTEXT_PARAMETERS_8
-#define mld_compute_t0_t1_tr_from_sk_components              \
-  MLD_ADD_PARAM_SET(mld_compute_t0_t1_tr_from_sk_components) \
-  MLD_CONTEXT_PARAMETERS_7
+#define mld_compute_t0k_t1k MLD_ADD_PARAM_SET(mld_compute_t0k_t1k)
 /* End of parameter set namespacing */
 
 
@@ -196,64 +194,55 @@ __contract__(
 }
 
 /*************************************************
- * Name:        mld_compute_t0_t1_tr_from_sk_components
+ * Name:        mld_compute_t0k_t1k
  *
- * Description: Computes t0, t1, tr, and pk from secret key components
- *              rho, s1, s2. This is the shared computation used by
- *              both keygen and generating the public key from the
- *              secret key.
+ * Description: Compute row k of t = A*s1hat + s2, and decompose into
+ *              t0[k] and t1[k] via power2round. This is the per-row
+ *              shared computation used by both keygen and pk_from_sk
+ *              to avoid materializing the full t/t0/t1 polyveck.
  *
- * Arguments:   - mld_polyveck *t0: output t0
- *              - mld_polyveck *t1: output t1
- *              - uint8_t tr[MLDSA_TRBYTES]: output tr
- *              - uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES]: output public key
- *              - const uint8_t rho[MLDSA_SEEDBYTES]: input rho
- *              - const mld_polyvecl *s1: input s1
- *              - const mld_polyveck *s2: input s2
+ *              The accumulator scratch tk is reused as t0k by the
+ *              caller (the contract of mld_poly_power2round requires
+ *              t0k == tk).
+ *
+ * Arguments:   - mld_poly *t0k: output t0 polynomial (must alias tk)
+ *              - mld_poly *t1k: output t1 polynomial
+ *              - mld_poly *tk: scratch / accumulator for the matrix row
+ *              - mld_polymat *mat: expanded matrix (sampled lazily in
+ *                                    REDUCE_RAM mode)
+ *              - unsigned int k: row index, must be < MLDSA_K
+ *              - const mld_polyvecl *s1hat: s1 in NTT domain
+ *              - const mld_poly *s2k: s2 polynomial for row k
  **************************************************/
-MLD_MUST_CHECK_RETURN_VALUE
-static int mld_compute_t0_t1_tr_from_sk_components(
-    mld_polyveck *t0, mld_polyveck *t1, uint8_t tr[MLDSA_TRBYTES],
-    uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES], const uint8_t rho[MLDSA_SEEDBYTES],
-    const mld_polyvecl *s1hat, const mld_polyveck *s2,
-    MLD_CONFIG_CONTEXT_PARAMETER_TYPE context)
+static void mld_compute_t0k_t1k(mld_poly *t0k, mld_poly *t1k, mld_poly *tk,
+                                mld_polymat *mat, unsigned int k,
+                                const mld_polyvecl *s1hat, const mld_poly *s2k)
 __contract__(
-  requires(memory_no_alias(t0, sizeof(mld_polyveck)))
-  requires(memory_no_alias(t1, sizeof(mld_polyveck)))
-  requires(memory_no_alias(tr, MLDSA_TRBYTES))
-  requires(memory_no_alias(pk, MLDSA_CRYPTO_PUBLICKEYBYTES))
-  requires(memory_no_alias(rho, MLDSA_SEEDBYTES))
+  requires(memory_no_alias(tk, sizeof(mld_poly)))
+  requires(memory_no_alias(t1k, sizeof(mld_poly)))
+  requires(memory_no_alias(mat, sizeof(mld_polymat)))
   requires(memory_no_alias(s1hat, sizeof(mld_polyvecl)))
-  requires(memory_no_alias(s2, sizeof(mld_polyveck)))
-  requires(forall(l0, 0, MLDSA_L, array_abs_bound(s1hat->vec[l0].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
-  requires(forall(k0, 0, MLDSA_K, array_bound(s2->vec[k0].coeffs, 0, MLDSA_N, MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1)))
-  assigns(memory_slice(t0, sizeof(mld_polyveck)))
-  assigns(memory_slice(t1, sizeof(mld_polyveck)))
-  assigns(memory_slice(tr, MLDSA_TRBYTES))
-  assigns(memory_slice(pk, MLDSA_CRYPTO_PUBLICKEYBYTES))
-  ensures(forall(k1, 0, MLDSA_K, array_bound(t0->vec[k1].coeffs, 0, MLDSA_N, -(1<<(MLDSA_D-1)) + 1, (1<<(MLDSA_D-1)) + 1)))
-  ensures(forall(k2, 0, MLDSA_K, array_bound(t1->vec[k2].coeffs, 0, MLDSA_N, 0, 1 << 10)))
-  ensures(return_value == 0 || return_value == MLD_ERR_OUT_OF_MEMORY))
+  requires(memory_no_alias(s2k, sizeof(mld_poly)))
+  requires(t0k == tk)
+  requires(k < MLDSA_K)
+  requires(forall(l0, 0, MLDSA_L,
+    array_bound(mat->vec[k].vec[l0].coeffs, 0, MLDSA_N, 0, MLDSA_Q)))
+  requires(forall(l1, 0, MLDSA_L,
+    array_abs_bound(s1hat->vec[l1].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+  requires(array_bound(s2k->coeffs, 0, MLDSA_N,
+    MLD_POLYETA_UNPACK_LOWER_BOUND, MLDSA_ETA + 1))
+  assigns(memory_slice(tk, sizeof(mld_poly)))
+  assigns(memory_slice(t1k, sizeof(mld_poly)))
+  ensures(array_bound(t0k->coeffs, 0, MLDSA_N,
+    -(1 << (MLDSA_D - 1)) + 1, (1 << (MLDSA_D - 1)) + 1))
+  ensures(array_bound(t1k->coeffs, 0, MLDSA_N, 0, 1 << 10)))
 {
-  int ret;
-  mld_polyveck *t = t0;
-  MLD_ALLOC(mat, mld_polymat, 1, context);
+  /* Matrix-vector multiplication (row k) */
+  mld_polyvecl_pointwise_acc_montgomery(tk, mat, k, s1hat);
+  mld_poly_invntt_tomont(tk);
 
-  if (mat == NULL)
-  {
-    ret = MLD_ERR_OUT_OF_MEMORY;
-    goto cleanup;
-  }
-
-  /* Expand matrix */
-  mld_polyvec_matrix_expand(mat, rho);
-
-  /* Matrix-vector multiplication */
-  mld_polyvec_matrix_pointwise_montgomery(t, mat, s1hat);
-  mld_polyveck_invntt_tomont(t);
-
-  /* Add error vector s2 */
-  mld_polyveck_add(t, s2);
+  /* Add error vector s2[k] */
+  mld_poly_add(tk, s2k);
 
   /* Reference: The following reduction is not present in the reference
    *            implementation. Omitting this reduction requires the output of
@@ -264,22 +253,11 @@ __contract__(
    *            reasoning. We instead add an additional reduction, and can
    *            consequently, relax the bounds requirements for the invntt.
    */
-  mld_polyveck_reduce(t);
+  mld_poly_reduce(tk);
 
-  /* Decompose to get t1, t0 */
-  mld_polyveck_caddq(t);
-  mld_polyveck_power2round(t1, t0, t);
-
-  /* Pack public key and compute tr */
-  mld_pack_pk(pk, rho, t1);
-  mld_shake256(tr, MLDSA_TRBYTES, pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
-
-  ret = 0;
-
-cleanup:
-  /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
-  MLD_FREE(mat, mld_polymat, 1, context);
-  return ret;
+  /* Decompose to get t1[k], t0[k] */
+  mld_poly_caddq(tk);
+  mld_poly_power2round(t1k, t0k, tk);
 }
 
 MLD_MUST_CHECK_RETURN_VALUE
@@ -289,29 +267,21 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
                               const uint8_t seed[MLDSA_SEEDBYTES],
                               MLD_CONFIG_CONTEXT_PARAMETER_TYPE context)
 {
+  unsigned int k;
   int ret;
   const uint8_t *rho, *rhoprime, *key;
-
-  /* TODO: Remove the following workaround for
-   * https://github.com/diffblue/cbmc/issues/8813 */
-  typedef MLD_UNION_OR_STRUCT
-  {
-    mld_polyveck t1;
-    mld_polyvecl s1;
-  }
-  s1_t1_u;
-  mld_polyvecl *s1;
-  mld_polyveck *t1;
 
   MLD_ALLOC(seedbuf, uint8_t, 2 * MLDSA_SEEDBYTES + MLDSA_CRHBYTES, context);
   MLD_ALLOC(inbuf, uint8_t, MLDSA_SEEDBYTES + 2, context);
   MLD_ALLOC(tr, uint8_t, MLDSA_TRBYTES, context);
-  MLD_ALLOC(s1_t1, s1_t1_u, 1, context);
+  MLD_ALLOC(s1, mld_polyvecl, 1, context);
   MLD_ALLOC(s2, mld_polyveck, 1, context);
-  MLD_ALLOC(t0, mld_polyveck, 1, context);
+  MLD_ALLOC(mat, mld_polymat, 1, context);
+  MLD_ALLOC(t0k, mld_poly, 1, context);
+  MLD_ALLOC(t1k, mld_poly, 1, context);
 
-  if (seedbuf == NULL || inbuf == NULL || tr == NULL || s1_t1 == NULL ||
-      s2 == NULL || t0 == NULL)
+  if (seedbuf == NULL || inbuf == NULL || tr == NULL || s1 == NULL ||
+      s2 == NULL || mat == NULL || t0k == NULL || t1k == NULL)
   {
     ret = MLD_ERR_OUT_OF_MEMORY;
     goto cleanup;
@@ -330,9 +300,6 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   /* Constant time: rho is part of the public key and, hence, public. */
   MLD_CT_TESTING_DECLASSIFY(rho, MLDSA_SEEDBYTES);
 
-  s1 = &s1_t1->s1;
-  t1 = &s1_t1->t1;
-
   /* Sample s1 and s2 */
   mld_sample_s1_s2(s1, s2, rhoprime);
 
@@ -342,25 +309,48 @@ int mld_sign_keypair_internal(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   /* NTT s1 in-place to use as s1hat */
   mld_polyvecl_ntt(s1);
 
-  /* Compute t0, t1, tr, and pk from rho, s1hat, s2 */
-  ret = mld_compute_t0_t1_tr_from_sk_components(t0, t1, tr, pk, rho, s1, s2,
-                                                context);
-  if (ret != 0)
+  /* Expand matrix */
+  mld_polyvec_matrix_expand(mat, rho);
+
+  /* Pack rho into pk */
+  mld_memcpy(pk, rho, MLDSA_SEEDBYTES);
+
+  /* Compute t row by row, decompose into t1[k]/t0[k], and pack
+   * immediately into pk and sk. The t0k buffer aliases the accumulator
+   * scratch (last argument), as required by mld_poly_power2round. */
+  for (k = 0; k < MLDSA_K; k++)
+  __loop__(
+    assigns(k, memory_slice(pk, MLDSA_CRYPTO_PUBLICKEYBYTES),
+            memory_slice(sk, MLDSA_CRYPTO_SECRETKEYBYTES),
+            memory_slice(t0k, sizeof(mld_poly)),
+            memory_slice(t1k, sizeof(mld_poly)))
+    invariant(k <= MLDSA_K)
+    decreases(MLDSA_K - k)
+  )
   {
-    goto cleanup;
+    mld_compute_t0k_t1k(t0k, t1k, t0k, mat, k, s1, &s2->vec[k]);
+    mld_pack_pk_t1(pk, k, t1k);
+    mld_pack_sk_t0(sk, k, t0k);
   }
 
-  /* Pack remaining secret key components */
-  mld_pack_sk_rho_key_tr_s2_t0(sk, rho, tr, key, t0, s2);
+  /* Compute tr = H(pk) */
+  mld_shake256(tr, MLDSA_TRBYTES, pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
+
+  /* Pack remaining secret key components (s1 and t0 already packed) */
+  mld_pack_sk_rho_key_tr_s2(sk, rho, tr, key, s2);
 
   /* Constant time: pk is the public key, inherently public data */
   MLD_CT_TESTING_DECLASSIFY(pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
 
+  ret = 0;
+
 cleanup:
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
-  MLD_FREE(t0, mld_polyveck, 1, context);
+  MLD_FREE(t1k, mld_poly, 1, context);
+  MLD_FREE(t0k, mld_poly, 1, context);
+  MLD_FREE(mat, mld_polymat, 1, context);
   MLD_FREE(s2, mld_polyveck, 1, context);
-  MLD_FREE(s1_t1, s1_t1_u, 1, context);
+  MLD_FREE(s1, mld_polyvecl, 1, context);
   MLD_FREE(tr, uint8_t, MLDSA_TRBYTES, context);
   MLD_FREE(inbuf, uint8_t, MLDSA_SEEDBYTES + 2, context);
   MLD_FREE(seedbuf, uint8_t, 2 * MLDSA_SEEDBYTES + MLDSA_CRHBYTES, context);
@@ -1478,6 +1468,7 @@ int mld_sign_pk_from_sk(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
                         const uint8_t sk[MLDSA_CRYPTO_SECRETKEYBYTES],
                         MLD_CONFIG_CONTEXT_PARAMETER_TYPE context)
 {
+  unsigned int k;
   uint8_t check, cmp0, cmp1, chk1, chk2;
   int ret;
   MLD_ALLOC(rho, uint8_t, MLDSA_SEEDBYTES, context);
@@ -1486,48 +1477,67 @@ int mld_sign_pk_from_sk(uint8_t pk[MLDSA_CRYPTO_PUBLICKEYBYTES],
   MLD_ALLOC(key, uint8_t, MLDSA_SEEDBYTES, context);
   MLD_ALLOC(s1, mld_polyvecl, 1, context);
   MLD_ALLOC(s2, mld_polyveck, 1, context);
-  MLD_ALLOC(t0, mld_polyveck, 1, context);
-  MLD_ALLOC(t0_computed, mld_polyveck, 1, context);
-  MLD_ALLOC(t1, mld_polyveck, 1, context);
-  MLD_ALLOC(s1hat, mld_polyvecl, 1, context);
+  MLD_ALLOC(mat, mld_polymat, 1, context);
+  MLD_ALLOC(t0k, mld_poly, 1, context);
+  MLD_ALLOC(t1k, mld_poly, 1, context);
+  MLD_ALLOC(t0k_packed, uint8_t, MLDSA_POLYT0_PACKEDBYTES, context);
 
   if (rho == NULL || tr == NULL || tr_computed == NULL || key == NULL ||
-      s1 == NULL || s2 == NULL || t0 == NULL || t0_computed == NULL ||
-      t1 == NULL || s1hat == NULL)
+      s1 == NULL || s2 == NULL || mat == NULL || t0k == NULL || t1k == NULL ||
+      t0k_packed == NULL)
   {
     ret = MLD_ERR_OUT_OF_MEMORY;
     goto cleanup;
   }
 
   /* Inline unpack_sk: mld_unpack_sk uses lazy types for s1/s2/t0 which
-   * we cannot use here.  */
+   * we cannot use here. t0 stays in packed form -- we compare it
+   * row-by-row against the recomputed value. */
   mld_memcpy(rho, sk, MLDSA_SEEDBYTES);
   mld_memcpy(key, sk + MLDSA_SEEDBYTES, MLDSA_SEEDBYTES);
   mld_memcpy(tr, sk + 2 * MLDSA_SEEDBYTES, MLDSA_TRBYTES);
   mld_polyvecl_unpack_eta(s1, sk + 2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES);
   mld_polyveck_unpack_eta(s2, sk + 2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES +
                                   MLDSA_L * MLDSA_POLYETA_PACKEDBYTES);
-  mld_polyveck_unpack_t0(t0, sk + 2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES +
-                                 MLDSA_L * MLDSA_POLYETA_PACKEDBYTES +
-                                 MLDSA_K * MLDSA_POLYETA_PACKEDBYTES);
 
   /* Validate s1 and s2 coefficients are within [-MLDSA_ETA, MLDSA_ETA] */
   chk1 = mld_polyvecl_chknorm(s1, MLDSA_ETA + 1) & 0xFF;
   chk2 = mld_polyveck_chknorm(s2, MLDSA_ETA + 1) & 0xFF;
 
-  /* Recompute t0, t1, tr, and pk from rho, s1, s2 */
-  *s1hat = *s1;
-  mld_polyvecl_ntt(s1hat);
-  ret = mld_compute_t0_t1_tr_from_sk_components(t0_computed, t1, tr_computed,
-                                                pk, rho, s1hat, s2, context);
-  if (ret != 0)
+  /* NTT s1 in place to use as s1hat */
+  mld_polyvecl_ntt(s1);
+
+  /* Expand matrix and pack rho into pk */
+  mld_polyvec_matrix_expand(mat, rho);
+  mld_memcpy(pk, rho, MLDSA_SEEDBYTES);
+
+  /* Recompute t row by row, decompose into t1[k]/t0[k], pack t1[k]
+   * into pk, and compare the packed t0[k] against the value stored
+   * in sk. */
+  cmp0 = 0;
+  for (k = 0; k < MLDSA_K; k++)
+  __loop__(
+    assigns(k, cmp0, memory_slice(pk, MLDSA_CRYPTO_PUBLICKEYBYTES),
+            memory_slice(t0k, sizeof(mld_poly)),
+            memory_slice(t1k, sizeof(mld_poly)),
+            memory_slice(t0k_packed, MLDSA_POLYT0_PACKEDBYTES))
+    invariant(k <= MLDSA_K)
+    decreases(MLDSA_K - k)
+  )
   {
-    goto cleanup;
+    mld_compute_t0k_t1k(t0k, t1k, t0k, mat, k, s1, &s2->vec[k]);
+    mld_pack_pk_t1(pk, k, t1k);
+    mld_polyt0_pack(t0k_packed, t0k);
+    cmp0 |= mld_ct_memcmp(t0k_packed,
+                          sk + 2 * MLDSA_SEEDBYTES + MLDSA_TRBYTES +
+                              MLDSA_L * MLDSA_POLYETA_PACKEDBYTES +
+                              MLDSA_K * MLDSA_POLYETA_PACKEDBYTES +
+                              k * MLDSA_POLYT0_PACKEDBYTES,
+                          MLDSA_POLYT0_PACKEDBYTES);
   }
 
-  /* Validate t0 and tr using constant-time comparisons */
-  cmp0 = mld_ct_memcmp((const uint8_t *)t0, (const uint8_t *)t0_computed,
-                       sizeof(mld_polyveck));
+  /* Compute tr_computed = H(pk) and compare to the stored tr */
+  mld_shake256(tr_computed, MLDSA_TRBYTES, pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
   cmp1 = mld_ct_memcmp((const uint8_t *)tr, (const uint8_t *)tr_computed,
                        MLDSA_TRBYTES);
   check = mld_value_barrier_u8(cmp0 | cmp1 | chk1 | chk2);
@@ -1547,10 +1557,10 @@ cleanup:
   MLD_CT_TESTING_DECLASSIFY(pk, MLDSA_CRYPTO_PUBLICKEYBYTES);
 
   /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
-  MLD_FREE(s1hat, mld_polyvecl, 1, context);
-  MLD_FREE(t1, mld_polyveck, 1, context);
-  MLD_FREE(t0_computed, mld_polyveck, 1, context);
-  MLD_FREE(t0, mld_polyveck, 1, context);
+  MLD_FREE(t0k_packed, uint8_t, MLDSA_POLYT0_PACKEDBYTES, context);
+  MLD_FREE(t1k, mld_poly, 1, context);
+  MLD_FREE(t0k, mld_poly, 1, context);
+  MLD_FREE(mat, mld_polymat, 1, context);
   MLD_FREE(s2, mld_polyveck, 1, context);
   MLD_FREE(s1, mld_polyvecl, 1, context);
   MLD_FREE(key, uint8_t, MLDSA_SEEDBYTES, context);
@@ -1570,6 +1580,6 @@ cleanup:
 #undef mld_H
 #undef mld_compute_pack_z
 #undef mld_attempt_signature_generation
-#undef mld_compute_t0_t1_tr_from_sk_components
+#undef mld_compute_t0k_t1k
 #undef MLD_NONCE_UB
 #undef MLD_PRE_HASH_OID_LEN

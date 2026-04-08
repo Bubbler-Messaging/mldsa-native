@@ -4,32 +4,40 @@
 include ../Makefile_params.common
 
 HARNESS_ENTRY = harness
-HARNESS_FILE = polyveck_pack_t0_harness
+HARNESS_FILE = polyvecl_pointwise_acc_montgomery_eager_harness
 
 # This should be a unique identifier for this proof, and will appear on the
 # Litani dashboard. It can be human-readable and contain spaces if you wish.
-PROOF_UID = polyveck_pack_t0
+PROOF_UID = polyvecl_pointwise_acc_montgomery_eager
 
-DEFINES +=
+DEFINES += -DMLD_CONFIG_USE_NATIVE_BACKEND_ARITH -DMLD_CONFIG_ARITH_BACKEND_FILE="\"dummy_backend.h\""
 INCLUDES +=
 
 REMOVE_FUNCTION_BODY +=
+UNWINDSET +=
 
 PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
-PROJECT_SOURCES += $(SRCDIR)/mldsa/src/polyvec.c
+PROJECT_SOURCES += $(SRCDIR)/mldsa/src/polyvec_lazy.c
 
-CHECK_FUNCTION_CONTRACTS=mld_polyveck_pack_t0
-USE_FUNCTION_CONTRACTS=mld_polyt0_pack
+CHECK_FUNCTION_CONTRACTS=mld_polyvecl_pointwise_acc_montgomery_eager
+USE_FUNCTION_CONTRACTS= mld_polyvecl_pointwise_acc_montgomery_c
+ifeq ($(MLD_CONFIG_PARAMETER_SET),44)
+	USE_FUNCTION_CONTRACTS+=mld_polyvecl_pointwise_acc_montgomery_l4_native
+else ifeq ($(MLD_CONFIG_PARAMETER_SET),65)
+	USE_FUNCTION_CONTRACTS+=mld_polyvecl_pointwise_acc_montgomery_l5_native
+else ifeq ($(MLD_CONFIG_PARAMETER_SET),87)
+	USE_FUNCTION_CONTRACTS+=mld_polyvecl_pointwise_acc_montgomery_l7_native
+endif
 APPLY_LOOP_CONTRACTS=on
 USE_DYNAMIC_FRAMES=1
 
 # Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
 EXTERNAL_SAT_SOLVER=
-CBMCFLAGS=--smt2
+CBMCFLAGS=--external-smt2-solver $(PROOF_ROOT)/lib/z3_smt_only --z3
 CBMCFLAGS += --slice-formula
 CBMCFLAGS += --no-array-field-sensitivity
 
-FUNCTION_NAME = polyveck_pack_t0
+FUNCTION_NAME = polyvecl_pointwise_acc_montgomery_eager
 
 # If this proof is found to consume huge amounts of RAM, you can set the
 # EXPENSIVE variable. With new enough versions of the proof tools, this will
@@ -38,7 +46,7 @@ FUNCTION_NAME = polyveck_pack_t0
 # EXPENSIVE = true
 
 # This function is large enough to need...
-CBMC_OBJECT_BITS = 9
+CBMC_OBJECT_BITS = 12
 
 # If you require access to a file-local ("static") function or object to conduct
 # your proof, set the following (and do not include the original source file

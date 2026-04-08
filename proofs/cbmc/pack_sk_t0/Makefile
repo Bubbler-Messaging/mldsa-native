@@ -4,11 +4,11 @@
 include ../Makefile_params.common
 
 HARNESS_ENTRY = harness
-HARNESS_FILE = compute_t0_t1_tr_from_sk_components_harness
+HARNESS_FILE = pack_sk_t0_harness
 
 # This should be a unique identifier for this proof, and will appear on the
 # Litani dashboard. It can be human-readable and contain spaces if you wish.
-PROOF_UID = mld_compute_t0_t1_tr_from_sk_components
+PROOF_UID = pack_sk_t0
 
 DEFINES +=
 INCLUDES +=
@@ -17,30 +17,18 @@ REMOVE_FUNCTION_BODY +=
 UNWINDSET +=
 
 PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
-PROJECT_SOURCES += $(SRCDIR)/mldsa/src/sign.c
+PROJECT_SOURCES += $(SRCDIR)/mldsa/src/packing.c
 
-CHECK_FUNCTION_CONTRACTS=mld_compute_t0_t1_tr_from_sk_components
-USE_FUNCTION_CONTRACTS=mld_shake256
-USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_expand_eager
-USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_pointwise_montgomery_eager
-USE_FUNCTION_CONTRACTS+=mld_polyveck_reduce
-USE_FUNCTION_CONTRACTS+=mld_polyveck_invntt_tomont
-USE_FUNCTION_CONTRACTS+=mld_polyveck_add
-USE_FUNCTION_CONTRACTS+=mld_polyveck_caddq
-USE_FUNCTION_CONTRACTS+=mld_polyveck_power2round
-USE_FUNCTION_CONTRACTS+=mld_pack_pk
-USE_FUNCTION_CONTRACTS+=mld_zeroize
-
+CHECK_FUNCTION_CONTRACTS=mld_pack_sk_t0
+USE_FUNCTION_CONTRACTS=mld_polyt0_pack
 APPLY_LOOP_CONTRACTS=on
 USE_DYNAMIC_FRAMES=1
 
 # Disable any setting of EXTERNAL_SAT_SOLVER, and choose SMT backend instead
 EXTERNAL_SAT_SOLVER=
-CBMCFLAGS=--external-smt2-solver $(PROOF_ROOT)/lib/z3_no_bv_extract --z3
-CBMCFLAGS += --slice-formula
-CBMCFLAGS += --no-array-field-sensitivity
+CBMCFLAGS=--smt2
 
-FUNCTION_NAME = mld_compute_t0_t1_tr_from_sk_components
+FUNCTION_NAME = pack_sk_t0
 
 # If this proof is found to consume huge amounts of RAM, you can set the
 # EXPENSIVE variable. With new enough versions of the proof tools, this will
@@ -49,7 +37,7 @@ FUNCTION_NAME = mld_compute_t0_t1_tr_from_sk_components
 # EXPENSIVE = true
 
 # This function is large enough to need...
-CBMC_OBJECT_BITS = 12
+CBMC_OBJECT_BITS = 9
 
 # If you require access to a file-local ("static") function or object to conduct
 # your proof, set the following (and do not include the original source file

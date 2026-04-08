@@ -23,11 +23,12 @@ CHECK_FUNCTION_CONTRACTS=mld_keypair_internal
 USE_FUNCTION_CONTRACTS=mld_shake256
 USE_FUNCTION_CONTRACTS+=mld_polyvec_matrix_expand_eager
 USE_FUNCTION_CONTRACTS+=mld_sample_s1_s2
-USE_FUNCTION_CONTRACTS+=mld_compute_t0_t1_tr_from_sk_components
-USE_FUNCTION_CONTRACTS+=mld_pack_pk
 USE_FUNCTION_CONTRACTS+=mld_pack_sk_s1
-USE_FUNCTION_CONTRACTS+=mld_pack_sk_rho_key_tr_s2_t0
+USE_FUNCTION_CONTRACTS+=mld_pack_sk_rho_key_tr_s2
+USE_FUNCTION_CONTRACTS+=mld_pack_sk_t0
+USE_FUNCTION_CONTRACTS+=mld_pack_pk_t1
 USE_FUNCTION_CONTRACTS+=mld_polyvecl_ntt
+USE_FUNCTION_CONTRACTS+=mld_compute_t0k_t1k
 USE_FUNCTION_CONTRACTS+=mld_zeroize
 USE_FUNCTION_CONTRACTS+=mld_check_pct
 

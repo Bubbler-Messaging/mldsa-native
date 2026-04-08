@@ -23,8 +23,8 @@ CHECK_FUNCTION_CONTRACTS=mld_unpack_sk
 USE_FUNCTION_CONTRACTS=mld_polyvecl_unpack_eta
 USE_FUNCTION_CONTRACTS+=mld_polyvecl_ntt
 USE_FUNCTION_CONTRACTS+=mld_polyveck_unpack_eta
-USE_FUNCTION_CONTRACTS+=mld_polyveck_ntt
 USE_FUNCTION_CONTRACTS+=mld_polyveck_unpack_t0
+USE_FUNCTION_CONTRACTS+=mld_polyveck_ntt
 APPLY_LOOP_CONTRACTS=on
 USE_DYNAMIC_FRAMES=1
 

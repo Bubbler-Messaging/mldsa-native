@@ -75,11 +75,9 @@ static int bench(void)
   BENCH("poly_invntt_tomont", mld_poly_invntt_tomont((mld_poly *)data0))
 
   /* pointwise */
-#if !defined(MLD_CONFIG_REDUCE_RAM)
   BENCH("polyvecl_pointwise_acc_montgomery",
-        mld_polyvecl_pointwise_acc_montgomery(&poly_out, &polyvecl_a,
+        mld_polyvecl_pointwise_acc_montgomery(&poly_out, &polymat, 0,
                                               &polyvecl_b))
-#endif
   BENCH("polyvec_matrix_pointwise_montgomery",
         mld_polyvec_matrix_pointwise_montgomery(&polyveck_out, &polymat,
                                                 &polyvecl_b))

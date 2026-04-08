@@ -17,11 +17,6 @@
 #include "debug.h"
 #include "polyvec_lazy.h"
 
-/* This namespacing is not done at the top to avoid a naming conflict
- * with native backends, which are currently not yet namespaced. */
-#define mld_polyvecl_pointwise_acc_montgomery_c \
-  MLD_ADD_PARAM_SET(mld_polyvecl_pointwise_acc_montgomery_c)
-
 /**************************************************************/
 /************ Vectors of polynomials of length MLDSA_L **************/
 /**************************************************************/
@@ -87,114 +82,6 @@ void mld_polyvecl_ntt(mld_polyvecl *v)
 
   mld_assert_abs_bound_2d(v->vec, MLDSA_L, MLDSA_N, MLD_NTT_BOUND);
 }
-
-#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
-MLD_STATIC_TESTABLE void mld_polyvecl_pointwise_acc_montgomery_c(
-    mld_poly *w, const mld_polyvecl *u, const mld_polyvecl *v)
-__contract__(
-  requires(memory_no_alias(w, sizeof(mld_poly)))
-  requires(memory_no_alias(u, sizeof(mld_polyvecl)))
-  requires(memory_no_alias(v, sizeof(mld_polyvecl)))
-  requires(forall(l0, 0, MLDSA_L,
-                  array_bound(u->vec[l0].coeffs, 0, MLDSA_N, 0, MLDSA_Q)))
-  requires(forall(l1, 0, MLDSA_L,
-    array_abs_bound(v->vec[l1].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
-  assigns(memory_slice(w, sizeof(mld_poly)))
-  ensures(array_abs_bound(w->coeffs, 0, MLDSA_N, MLDSA_Q))
-)
-{
-  unsigned int i, j;
-  mld_assert_bound_2d(u->vec, MLDSA_L, MLDSA_N, 0, MLDSA_Q);
-  mld_assert_abs_bound_2d(v->vec, MLDSA_L, MLDSA_N, MLD_NTT_BOUND);
-  for (i = 0; i < MLDSA_N; i++)
-  __loop__(
-    assigns(i, j, memory_slice(w, sizeof(mld_poly)))
-    invariant(i <= MLDSA_N)
-    invariant(array_abs_bound(w->coeffs, 0, i, MLDSA_Q))
-    decreases(MLDSA_N - i)
-  )
-  {
-    int64_t t = 0;
-    int32_t r;
-    for (j = 0; j < MLDSA_L; j++)
-    __loop__(
-      assigns(j, t)
-      invariant(j <= MLDSA_L)
-      invariant(t >= -(int64_t)j*(MLDSA_Q - 1)*(MLD_NTT_BOUND - 1))
-      invariant(t <= (int64_t)j*(MLDSA_Q - 1)*(MLD_NTT_BOUND - 1))
-      decreases(MLDSA_L - j)
-    )
-    {
-      t += (int64_t)u->vec[j].coeffs[i] * v->vec[j].coeffs[i];
-    }
-
-    r = mld_montgomery_reduce(t);
-    w->coeffs[i] = r;
-  }
-
-  mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
-}
-
-MLD_INTERNAL_API
-void mld_polyvecl_pointwise_acc_montgomery(mld_poly *w, const mld_polyvecl *u,
-                                           const mld_polyvecl *v)
-{
-#if defined(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L4) && \
-    MLD_CONFIG_PARAMETER_SET == 44
-  int ret;
-  mld_assert_bound_2d(u->vec, MLDSA_L, MLDSA_N, 0, MLDSA_Q);
-  mld_assert_abs_bound_2d(v->vec, MLDSA_L, MLDSA_N, MLD_NTT_BOUND);
-  ret = mld_polyvecl_pointwise_acc_montgomery_l4_native(
-      w->coeffs, (const int32_t (*)[MLDSA_N])u->vec,
-      (const int32_t (*)[MLDSA_N])v->vec);
-  if (ret == MLD_NATIVE_FUNC_SUCCESS)
-  {
-    mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
-    return;
-  }
-#elif defined(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L5) && \
-    MLD_CONFIG_PARAMETER_SET == 65
-  int ret;
-  mld_assert_bound_2d(u->vec, MLDSA_L, MLDSA_N, 0, MLDSA_Q);
-  mld_assert_abs_bound_2d(v->vec, MLDSA_L, MLDSA_N, MLD_NTT_BOUND);
-  ret = mld_polyvecl_pointwise_acc_montgomery_l5_native(
-      w->coeffs, (const int32_t (*)[MLDSA_N])u->vec,
-      (const int32_t (*)[MLDSA_N])v->vec);
-  if (ret == MLD_NATIVE_FUNC_SUCCESS)
-  {
-    mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
-    return;
-  }
-#elif defined(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L7) && \
-    MLD_CONFIG_PARAMETER_SET == 87
-  int ret;
-  mld_assert_bound_2d(u->vec, MLDSA_L, MLDSA_N, 0, MLDSA_Q);
-  mld_assert_abs_bound_2d(v->vec, MLDSA_L, MLDSA_N, MLD_NTT_BOUND);
-  ret = mld_polyvecl_pointwise_acc_montgomery_l7_native(
-      w->coeffs, (const int32_t (*)[MLDSA_N])u->vec,
-      (const int32_t (*)[MLDSA_N])v->vec);
-  if (ret == MLD_NATIVE_FUNC_SUCCESS)
-  {
-    mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
-    return;
-  }
-#endif /* !(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L4 && \
-          MLD_CONFIG_PARAMETER_SET == 44) &&                       \
-          !(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L5 && \
-          MLD_CONFIG_PARAMETER_SET == 65) &&                       \
-          MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L7 &&   \
-          MLD_CONFIG_PARAMETER_SET == 87 */
-  /* The first input is bounded by [0, Q-1] inclusive
-   * The second input is bounded by [-9Q+1, 9Q-1] inclusive . Hence, we can
-   * safely accumulate in 64-bits without intermediate reductions as
-   * MLDSA_L * (MLD_NTT_BOUND-1) * (Q-1) < INT64_MAX
-   *
-   * The worst case is ML-DSA-87: 7 * (9Q-1) * (Q-1) < 2**52
-   * (and likewise for negative values)
-   */
-  mld_polyvecl_pointwise_acc_montgomery_c(w, u, v);
-}
-#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 MLD_INTERNAL_API
 uint32_t mld_polyvecl_chknorm(const mld_polyvecl *v, int32_t bound)
@@ -266,29 +153,6 @@ void mld_polyveck_caddq(mld_polyveck *v)
   }
 
   mld_assert_bound_2d(v->vec, MLDSA_K, MLDSA_N, 0, MLDSA_Q);
-}
-
-/* Reference: We use destructive version (output=first input) to avoid
- *            reasoning about aliasing in the CBMC specification */
-MLD_INTERNAL_API
-void mld_polyveck_add(mld_polyveck *u, const mld_polyveck *v)
-{
-  unsigned int i;
-
-  for (i = 0; i < MLDSA_K; ++i)
-  __loop__(
-    assigns(i, memory_slice(u, sizeof(mld_polyveck)))
-    invariant(i <= MLDSA_K)
-    invariant(forall(k0, i, MLDSA_K,
-              forall(k1, 0, MLDSA_N, u->vec[k0].coeffs[k1] == loop_entry(*u).vec[k0].coeffs[k1])))
-    invariant(forall(k6, 0, i, array_bound(u->vec[k6].coeffs, 0, MLDSA_N, INT32_MIN, MLD_REDUCE32_DOMAIN_MAX)))
-    decreases(MLDSA_K - i)
-  )
-  {
-    mld_poly_add(&u->vec[i], &v->vec[i]);
-  }
-  mld_assert_bound_2d(u->vec, MLDSA_K, MLDSA_N, INT32_MIN,
-                      MLD_REDUCE32_DOMAIN_MAX);
 }
 
 MLD_INTERNAL_API
@@ -423,32 +287,6 @@ uint32_t mld_polyveck_chknorm(const mld_polyveck *v, int32_t bound)
 }
 
 MLD_INTERNAL_API
-void mld_polyveck_power2round(mld_polyveck *v1, mld_polyveck *v0,
-                              const mld_polyveck *v)
-{
-  unsigned int i;
-  mld_assert_bound_2d(v->vec, MLDSA_K, MLDSA_N, 0, MLDSA_Q);
-
-  for (i = 0; i < MLDSA_K; ++i)
-  __loop__(
-    assigns(i, memory_slice(v0, sizeof(mld_polyveck)), memory_slice(v1, sizeof(mld_polyveck)))
-    invariant(i <= MLDSA_K)
-    invariant(forall(k0, i, MLDSA_K, array_bound(v->vec[k0].coeffs, 0, MLDSA_N, 0, MLDSA_Q)))
-    invariant(forall(k1, 0, i, array_bound(v0->vec[k1].coeffs, 0, MLDSA_N, -(MLD_2_POW_D/2)+1, (MLD_2_POW_D/2)+1)))
-    invariant(forall(k2, 0, i, array_bound(v1->vec[k2].coeffs, 0, MLDSA_N, 0, ((MLDSA_Q - 1) / MLD_2_POW_D) + 1)))
-    decreases(MLDSA_K - i)
-  )
-  {
-    mld_poly_power2round(&v1->vec[i], &v0->vec[i], &v->vec[i]);
-  }
-
-  mld_assert_bound_2d(v0->vec, MLDSA_K, MLDSA_N, -(MLD_2_POW_D / 2) + 1,
-                      (MLD_2_POW_D / 2) + 1);
-  mld_assert_bound_2d(v1->vec, MLDSA_K, MLDSA_N, 0,
-                      ((MLDSA_Q - 1) / MLD_2_POW_D) + 1);
-}
-
-MLD_INTERNAL_API
 void mld_polyveck_decompose(mld_polyveck *v1, mld_polyveck *v0)
 {
   unsigned int i;
@@ -554,24 +392,6 @@ void mld_polyvecl_pack_eta(uint8_t r[MLDSA_L * MLDSA_POLYETA_PACKEDBYTES],
 }
 
 MLD_INTERNAL_API
-void mld_polyveck_pack_t0(uint8_t r[MLDSA_K * MLDSA_POLYT0_PACKEDBYTES],
-                          const mld_polyveck *p)
-{
-  unsigned int i;
-  mld_assert_bound_2d(p->vec, MLDSA_K, MLDSA_N, -(1 << (MLDSA_D - 1)) + 1,
-                      (1 << (MLDSA_D - 1)) + 1);
-  for (i = 0; i < MLDSA_K; ++i)
-  __loop__(
-    assigns(i, memory_slice(r, MLDSA_K * MLDSA_POLYT0_PACKEDBYTES))
-    invariant(i <= MLDSA_K)
-    decreases(MLDSA_K - i)
-  )
-  {
-    mld_polyt0_pack(&r[i * MLDSA_POLYT0_PACKEDBYTES], &p->vec[i]);
-  }
-}
-
-MLD_INTERNAL_API
 void mld_polyvecl_unpack_eta(
     mld_polyvecl *p, const uint8_t r[MLDSA_L * MLDSA_POLYETA_PACKEDBYTES])
 {
@@ -613,6 +433,7 @@ void mld_polyveck_unpack_eta(
                       MLDSA_ETA + 1);
 }
 
+#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
 MLD_INTERNAL_API
 void mld_polyveck_unpack_t0(mld_polyveck *p,
                             const uint8_t r[MLDSA_K * MLDSA_POLYT0_PACKEDBYTES])
@@ -626,7 +447,4 @@ void mld_polyveck_unpack_t0(mld_polyveck *p,
   mld_assert_bound_2d(p->vec, MLDSA_K, MLDSA_N, -(1 << (MLDSA_D - 1)) + 1,
                       (1 << (MLDSA_D - 1)) + 1);
 }
-
-/* To facilitate single-compilation-unit (SCU) builds, undefine all macros.
- * Don't modify by hand -- this is auto-generated by scripts/autogen. */
-#undef mld_polyvecl_pointwise_acc_montgomery_c
+#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */

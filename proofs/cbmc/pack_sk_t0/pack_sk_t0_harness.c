@@ -1,10 +1,13 @@
 // Copyright (c) The mldsa-native project authors
 // SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
 
-#include "polyvec.h"
+#include "packing.h"
+
 
 void harness(void)
 {
-  mld_polyveck *a, *b, *c;
-  mld_polyveck_power2round(a, b, c);
+  uint8_t *sk;
+  unsigned int k;
+  mld_poly *t0k;
+  mld_pack_sk_t0(sk, k, t0k);
 }

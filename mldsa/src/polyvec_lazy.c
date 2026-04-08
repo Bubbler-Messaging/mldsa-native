@@ -22,6 +22,8 @@
   MLD_ADD_PARAM_SET(mld_polymat_permute_bitrev_to_custom)
 #define mld_polyvecl_permute_bitrev_to_custom \
   MLD_ADD_PARAM_SET(mld_polyvecl_permute_bitrev_to_custom)
+#define mld_polyvecl_pointwise_acc_montgomery_c \
+  MLD_ADD_PARAM_SET(mld_polyvecl_pointwise_acc_montgomery_c)
 
 #if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
 
@@ -176,6 +178,117 @@ void mld_polyvec_matrix_expand_eager(mld_polymat_eager *mat,
   mld_zeroize(seed_ext, sizeof(seed_ext));
 }
 
+MLD_STATIC_TESTABLE void mld_polyvecl_pointwise_acc_montgomery_c(
+    mld_poly *w, const mld_polyvecl *u, const mld_polyvecl *v)
+__contract__(
+  requires(memory_no_alias(w, sizeof(mld_poly)))
+  requires(memory_no_alias(u, sizeof(mld_polyvecl)))
+  requires(memory_no_alias(v, sizeof(mld_polyvecl)))
+  requires(forall(l0, 0, MLDSA_L,
+                  array_bound(u->vec[l0].coeffs, 0, MLDSA_N, 0, MLDSA_Q)))
+  requires(forall(l1, 0, MLDSA_L,
+    array_abs_bound(v->vec[l1].coeffs, 0, MLDSA_N, MLD_NTT_BOUND)))
+  assigns(memory_slice(w, sizeof(mld_poly)))
+  ensures(array_abs_bound(w->coeffs, 0, MLDSA_N, MLDSA_Q))
+)
+{
+  unsigned int i, j;
+  mld_assert_bound_2d(u->vec, MLDSA_L, MLDSA_N, 0, MLDSA_Q);
+  mld_assert_abs_bound_2d(v->vec, MLDSA_L, MLDSA_N, MLD_NTT_BOUND);
+  for (i = 0; i < MLDSA_N; i++)
+  __loop__(
+    assigns(i, j, memory_slice(w, sizeof(mld_poly)))
+    invariant(i <= MLDSA_N)
+    invariant(array_abs_bound(w->coeffs, 0, i, MLDSA_Q))
+    decreases(MLDSA_N - i)
+  )
+  {
+    int64_t t = 0;
+    int32_t r;
+    for (j = 0; j < MLDSA_L; j++)
+    __loop__(
+      assigns(j, t)
+      invariant(j <= MLDSA_L)
+      invariant(t >= -(int64_t)j*(MLDSA_Q - 1)*(MLD_NTT_BOUND - 1))
+      invariant(t <= (int64_t)j*(MLDSA_Q - 1)*(MLD_NTT_BOUND - 1))
+      decreases(MLDSA_L - j)
+    )
+    {
+      t += (int64_t)u->vec[j].coeffs[i] * v->vec[j].coeffs[i];
+    }
+
+    r = mld_montgomery_reduce(t);
+    w->coeffs[i] = r;
+  }
+
+  mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
+}
+
+MLD_INTERNAL_API
+void mld_polyvecl_pointwise_acc_montgomery_eager(mld_poly *w,
+                                                 const mld_polymat_eager *mat,
+                                                 unsigned int k,
+                                                 const mld_polyvecl *v)
+{
+  const mld_polyvecl *u = &mat->vec[k];
+  mld_assert_bound_2d(u->vec, MLDSA_L, MLDSA_N, 0, MLDSA_Q);
+  mld_assert_abs_bound_2d(v->vec, MLDSA_L, MLDSA_N, MLD_NTT_BOUND);
+#if defined(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L4) && \
+    MLD_CONFIG_PARAMETER_SET == 44
+  {
+    int ret;
+    ret = mld_polyvecl_pointwise_acc_montgomery_l4_native(
+        w->coeffs, (const int32_t (*)[MLDSA_N])u->vec,
+        (const int32_t (*)[MLDSA_N])v->vec);
+    if (ret == MLD_NATIVE_FUNC_SUCCESS)
+    {
+      mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
+      return;
+    }
+  }
+#elif defined(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L5) && \
+    MLD_CONFIG_PARAMETER_SET == 65
+  {
+    int ret;
+    ret = mld_polyvecl_pointwise_acc_montgomery_l5_native(
+        w->coeffs, (const int32_t (*)[MLDSA_N])u->vec,
+        (const int32_t (*)[MLDSA_N])v->vec);
+    if (ret == MLD_NATIVE_FUNC_SUCCESS)
+    {
+      mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
+      return;
+    }
+  }
+#elif defined(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L7) && \
+    MLD_CONFIG_PARAMETER_SET == 87
+  {
+    int ret;
+    ret = mld_polyvecl_pointwise_acc_montgomery_l7_native(
+        w->coeffs, (const int32_t (*)[MLDSA_N])u->vec,
+        (const int32_t (*)[MLDSA_N])v->vec);
+    if (ret == MLD_NATIVE_FUNC_SUCCESS)
+    {
+      mld_assert_abs_bound(w->coeffs, MLDSA_N, MLDSA_Q);
+      return;
+    }
+  }
+#endif /* !(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L4 && \
+          MLD_CONFIG_PARAMETER_SET == 44) &&                       \
+          !(MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L5 && \
+          MLD_CONFIG_PARAMETER_SET == 65) &&                       \
+          MLD_USE_NATIVE_POLYVECL_POINTWISE_ACC_MONTGOMERY_L7 &&   \
+          MLD_CONFIG_PARAMETER_SET == 87 */
+  /* The first input is bounded by [0, Q-1] inclusive
+   * The second input is bounded by [-9Q+1, 9Q-1] inclusive . Hence, we can
+   * safely accumulate in 64-bits without intermediate reductions as
+   * MLDSA_L * (MLD_NTT_BOUND-1) * (Q-1) < INT64_MAX
+   *
+   * The worst case is ML-DSA-87: 7 * (9Q-1) * (Q-1) < 2**52
+   * (and likewise for negative values)
+   */
+  mld_polyvecl_pointwise_acc_montgomery_c(w, u, v);
+}
+
 MLD_INTERNAL_API
 void mld_polyvec_matrix_pointwise_montgomery_eager(mld_polyveck *t,
                                                    mld_polymat_eager *mat,
@@ -193,8 +306,7 @@ void mld_polyvec_matrix_pointwise_montgomery_eager(mld_polyveck *t,
     decreases(MLDSA_K - i)
   )
   {
-    const mld_polyvecl *row = mld_polymat_get_row_eager(mat, i);
-    mld_polyvecl_pointwise_acc_montgomery(&t->vec[i], row, v);
+    mld_polyvecl_pointwise_acc_montgomery_eager(&t->vec[i], mat, i, v);
   }
 
   mld_assert_abs_bound_2d(t->vec, MLDSA_K, MLDSA_N, MLDSA_Q);
@@ -216,20 +328,29 @@ void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
                                                   mld_polymat_lazy *mat,
                                                   const mld_polyvecl *v)
 {
-  unsigned int i, l;
-
+  unsigned int i;
   for (i = 0; i < MLDSA_K; ++i)
   {
-    const mld_poly *a_kl = mld_polymat_get_poly_lazy(mat, i, 0);
-    mld_poly_pointwise_montgomery(&t->vec[i], a_kl, &v->vec[0]);
-    for (l = 1; l < MLDSA_L; ++l)
-    {
-      a_kl = mld_polymat_get_poly_lazy(mat, i, l);
-      mld_poly_pointwise_montgomery(&mat->tmp, a_kl, &v->vec[l]);
-      mld_poly_add(&t->vec[i], &mat->tmp);
-    }
-    mld_poly_reduce(&t->vec[i]);
+    mld_polyvecl_pointwise_acc_montgomery_lazy(&t->vec[i], mat, i, v);
   }
+}
+
+MLD_INTERNAL_API
+void mld_polyvecl_pointwise_acc_montgomery_lazy(mld_poly *w,
+                                                mld_polymat_lazy *mat,
+                                                unsigned int k,
+                                                const mld_polyvecl *v)
+{
+  unsigned int l;
+  const mld_poly *a_kl = mld_polymat_get_poly_lazy(mat, k, 0);
+  mld_poly_pointwise_montgomery(w, a_kl, &v->vec[0]);
+  for (l = 1; l < MLDSA_L; l++)
+  {
+    a_kl = mld_polymat_get_poly_lazy(mat, k, l);
+    mld_poly_pointwise_montgomery(&mat->tmp, a_kl, &v->vec[l]);
+    mld_poly_add(w, &mat->tmp);
+  }
+  mld_poly_reduce(w);
 }
 
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
@@ -238,3 +359,4 @@ void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
  * Don't modify by hand -- this is auto-generated by scripts/autogen. */
 #undef mld_polymat_permute_bitrev_to_custom
 #undef mld_polyvecl_permute_bitrev_to_custom
+#undef mld_polyvecl_pointwise_acc_montgomery_c

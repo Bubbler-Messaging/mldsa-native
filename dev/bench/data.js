@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775879775668,
+  "lastUpdate": 1775879779307,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -269834,6 +269834,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 109584,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jakemas@amazon.com",
+            "name": "Jake Massimo",
+            "username": "jakemas"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "cc1a2546f7a0b3baaf304a761b350849d8f4634f",
+          "message": "Add HOL Light pointwise_acc proofs for AArch64 and x86_64\n\nPort the ML-DSA pointwise multiplication-accumulation (l=4,5,7) and\ntheir HOL Light proofs of correctness from s2n-bignum to mldsa-native,\nfor both AArch64 (NEON) and x86_64 (AVX2). Includes constant-time and\nmemory safety proofs for both architectures.\n\nPorted from s2n-bignum PR #373.\n\nSigned-off-by: Jake Massimo <jakemas@amazon.com>\nSigned-off-by: Ubuntu <ubuntu@ip-172-31-29-57.us-west-2.compute.internal>",
+          "timestamp": "2026-04-11T11:51:40+08:00",
+          "tree_id": "e204c32e53a999f64ee9a50746cc39f0ae4a5499",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/cc1a2546f7a0b3baaf304a761b350849d8f4634f"
+        },
+        "date": 1775879690510,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 43015,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 135642,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 45254,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 72945,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 216212,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 73891,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 108154,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 250928,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 108894,
             "unit": "cycles"
           }
         ]

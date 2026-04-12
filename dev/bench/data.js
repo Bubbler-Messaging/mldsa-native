@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1775990529967,
+  "lastUpdate": 1775990539539,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -541051,6 +541051,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 319882,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "Anders.Sonmark@axis.com",
+            "name": "Anders Sonmark",
+            "username": "flynd"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "5dc421127460abbb6989c3c493b6d60df75499f7",
+          "message": "fips202: Don't build Keccak-f1600x2/x4 unless used\n\nWhen building with MLD_CONFIG_SERIAL_FIPS202_ONLY, Keccak-f1600x2/x4\nis not used and can be skipped.\n\nSigned-off-by: Anders Sonmark <Anders.Sonmark@axis.com>",
+          "timestamp": "2026-04-12T18:38:02+08:00",
+          "tree_id": "9abda42bd7289fbc04524beb30f21bf865521e1d",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/5dc421127460abbb6989c3c493b6d60df75499f7"
+        },
+        "date": 1775990338461,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 113010,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 356966,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 117656,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 196265,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 588163,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 194498,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 322094,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 754572,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 319799,
             "unit": "cycles"
           }
         ]

@@ -1104,3 +1104,38 @@ let SIMD_SIMPLIFY_ABBREV_TAC =
       let tms = sort free_in (find_terms pam (rand(concl th''))) in
       (MP_TAC th'' THEN MAP_EVERY AUTO_ABBREV_TAC tms THEN DISCH_TAC) (asl,w) in
   TRY(FIRST_X_ASSUM(ttac o check (simdable o concl)));;
+
+(* ========================================================================= *)
+(* ML-DSA use_hint shared infrastructure lemmas                              *)
+(* Used by both poly_use_hint_32 and poly_use_hint_88 proofs                 *)
+(* ========================================================================= *)
+
+
+
+let MLDSA_IVAL_VAL = prove(
+  `!a:int32. val a < 8380417 ==> ival a = &(val a)`,
+  GEN_TAC THEN DISCH_TAC THEN
+  SIMP_TAC[ival; DIMINDEX_32] THEN
+  CONV_TAC NUM_REDUCE_CONV THEN
+  COND_CASES_TAC THEN ASM_ARITH_TAC);;
+
+let INT_POS_NEG_BOUND = prove(`!n. ~((&n:int) < --(&2147483648))`,
+  GEN_TAC THEN REWRITE_TAC[INT_NOT_LT] THEN
+  MP_TAC(SPEC `n:num` INT_POS) THEN INT_ARITH_TAC);;
+
+let VAL_IWORD_NUM_32 = prove(
+  `!n. n < 2147483648 ==> val(iword(&n):int32) = n`,
+  GEN_TAC THEN DISCH_TAC THEN
+  MP_TAC(ISPECL [`&n:int`] (INST_TYPE [`:32`,`:N`] INT_VAL_IWORD)) THEN
+  REWRITE_TAC[DIMINDEX_32; INT_POS] THEN
+  CONV_TAC NUM_REDUCE_CONV THEN
+  ANTS_TAC THENL
+  [REWRITE_TAC[INT_OF_NUM_LT] THEN ASM_ARITH_TAC;
+   REWRITE_TAC[INT_OF_NUM_EQ] THEN SIMP_TAC[]]);;
+
+let WORD_ILE_ZERO_32 = BITBLAST_RULE
+  `!x:int32. word_ile x (word 0) <=> bit 31 x \/ x = word 0`;;
+
+let VAL_WORD_AND_15_32 = BITBLAST_RULE
+  `!x:int32. val(word_and x (word 15:int32)) = val x MOD 16`;;
+

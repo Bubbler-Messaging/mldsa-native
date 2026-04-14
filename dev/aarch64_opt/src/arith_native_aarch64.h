@@ -81,12 +81,36 @@ uint64_t mld_rej_uniform_asm(int32_t *r, const uint8_t *buf, unsigned buflen,
 #define mld_rej_uniform_eta2_asm MLD_NAMESPACE(rej_uniform_eta2_asm)
 MLD_MUST_CHECK_RETURN_VALUE
 uint64_t mld_rej_uniform_eta2_asm(int32_t *r, const uint8_t *buf,
-                                  unsigned buflen, const uint8_t *table);
+                                  unsigned buflen, const uint8_t *table)
+/* This must be kept in sync with the HOL-Light specification
+ * in proofs/hol_light/aarch64/proofs/mldsa_rej_uniform_eta2.ml */
+__contract__(
+  requires(buflen % 8 == 0)
+  requires(buflen >= 8)
+  requires(memory_no_alias(r, sizeof(int32_t) * MLDSA_N))
+  requires(memory_no_alias(buf, buflen))
+  requires(memory_no_alias(table, 4096)) /* check-magic: 4096 == 256 * 16 */
+  assigns(memory_slice(r, sizeof(int32_t) * MLDSA_N))
+  ensures(return_value <= MLDSA_N)
+  ensures(array_abs_bound(r, 0, return_value, MLDSA_ETA + 1))
+);
 
 #define mld_rej_uniform_eta4_asm MLD_NAMESPACE(rej_uniform_eta4_asm)
 MLD_MUST_CHECK_RETURN_VALUE
 uint64_t mld_rej_uniform_eta4_asm(int32_t *r, const uint8_t *buf,
-                                  unsigned buflen, const uint8_t *table);
+                                  unsigned buflen, const uint8_t *table)
+/* This must be kept in sync with the HOL-Light specification
+ * in proofs/hol_light/aarch64/proofs/mldsa_rej_uniform_eta4.ml */
+__contract__(
+  requires(buflen % 8 == 0)
+  requires(buflen >= 8)
+  requires(memory_no_alias(r, sizeof(int32_t) * MLDSA_N))
+  requires(memory_no_alias(buf, buflen))
+  requires(memory_no_alias(table, 4096)) /* check-magic: 4096 == 256 * 16 */
+  assigns(memory_slice(r, sizeof(int32_t) * MLDSA_N))
+  ensures(return_value <= MLDSA_N)
+  ensures(array_abs_bound(r, 0, return_value, MLDSA_ETA + 1))
+);
 
 #define mld_poly_decompose_32_asm MLD_NAMESPACE(poly_decompose_32_asm)
 void mld_poly_decompose_32_asm(int32_t *a1, int32_t *a0);

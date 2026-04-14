@@ -95,6 +95,10 @@ jobs:
             needs: ["aarch64_utils.ml"]
           - name: mldsa_poly_chknorm
             needs: ["aarch64_utils.ml"]
+          - name: mldsa_rej_uniform_eta2
+            needs: ["mldsa_specs.ml", "aarch64_utils.ml", "mldsa_rej_uniform_eta_table.ml", "subroutine_signatures.ml"]
+          - name: mldsa_rej_uniform_eta4
+            needs: ["mldsa_specs.ml", "aarch64_utils.ml", "mldsa_rej_uniform_eta_table.ml", "subroutine_signatures.ml"]
           - name: keccak_f1600_x1_scalar
             needs: ["keccak_spec.ml"]
           - name: keccak_f1600_x1_v84a

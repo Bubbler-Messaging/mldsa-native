@@ -60,6 +60,8 @@ OBJ = mldsa/mldsa_ntt.o \
       mldsa/mldsa_pointwise_acc_l4.o                    \
       mldsa/mldsa_pointwise_acc_l5.o                    \
       mldsa/mldsa_pointwise_acc_l7.o                    \
+      mldsa/mldsa_rej_uniform_eta2.o                    \
+      mldsa/mldsa_rej_uniform_eta4.o                    \
       mldsa/keccak_f1600_x1_scalar.o                    \
       mldsa/keccak_f1600_x1_v84a.o                      \
       mldsa/keccak_f1600_x2_v84a.o                      \

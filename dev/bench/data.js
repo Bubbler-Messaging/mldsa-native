@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1776323011336,
+  "lastUpdate": 1776323028200,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -477577,6 +477577,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 320191,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "eaa25dd9380e9e2550bbcc343c667234e13fc3c7",
+          "message": "Make tests and examples compatible with reduced-API configurations\n\nThe previous tests and examples assumed all APIs (keygen, sign, verify)\nwere always available: sign tests generated a keypair as setup, verify\ntests generated a keypair and signature as setup, and the alloc test\nrequired keygen for every test function. This made them incompatible\nwith reduced-API configurations where some APIs are disabled via\nMLD_CONFIG_NO_KEYPAIR_API, MLD_CONFIG_NO_SIGN_API, or\nMLD_CONFIG_NO_VERIFY_API. Additionally, signature test vector\ncomparisons depended on PRNG state flowing sequentially from keygen\ninto signing, which broke when PCT (Pairwise Consistency Test) consumed\nextra PRNG bytes during keygen.\n\nThis commit introduces auto-generated test vectors and refactors all\ntests and examples so that each operation (keygen, sign, verify) can\nbe tested independently using pre-computed test vectors.\n\nscripts/notrandombytes:\n- Add Python implementation of the SURF-based deterministic test PRNG,\n  matching the C version in test/notrandombytes/\n- Used by autogen --test-vectors to generate reproducible randomness\n  for test vector generation\n\nTest vector generation (scripts/autogen --test-vectors):\n- Add --test-vectors flag to scripts/autogen that invokes the ACVP\n  binaries with randomness from scripts/notrandombytes to generate\n  test/test_vectors/expected_test_vectors.h and the multilevel variant\n- Generate pk, sk, sig, sig_extmu, and sig_pre_hash_shake256 vectors\n  for all three parameter sets (44, 65, 87)\n- Include message, context, rnd, and mu in the header so consumers\n  don't need to hardcode them\n- Array dimensions are explicit in the generated header\n- Rename all test vector arrays from expected_xxx to test_vector_xxx\n- Add --test-vectors-msg and --test-vectors-ctx flags for custom\n  message/context\n\nTest changes (test_mldsa.c):\n- The existing tests (test_sign, test_wrong_pk, etc.) require all\n  three APIs and are left unchanged, guarded by\n  !MLD_CONFIG_NO_KEYPAIR_API && !MLD_CONFIG_NO_SIGN_API &&\n  !MLD_CONFIG_NO_VERIFY_API\n- Add test_sign_expected() as a new minimal test that works in\n  reduced-API configurations: each block (keygen, sign, verify) is\n  independently guarded and uses test vectors directly, so e.g. the\n  sign block can run without keygen by using test_vector_sk\n- Reset PRNG before each independent test operation so signature\n  vectors are deterministic regardless of PCT\n\ntest_alloc.c and test_rng_fail.c:\n- Both files exercise the same 10 API entry points (keygen,\n  pk_from_sk, sign, sign_combined, signature_extmu,\n  signature_pre_hash_shake256, verify, verify_extmu,\n  verify_pre_hash_shake256, open), each independently guarded by\n  the minimal required API\n- Sign tests use test_vector_sk directly (no keygen dependency)\n- Verify tests use test_vector_sig/pk/sig_extmu/sig_pre_hash_shake256\n  directly (no sign or keygen dependency)\n- main() uses r |= pattern for error accumulation\n\nExample refactoring:\n- Hoist test logic into static example_xxx() functions with\n  #if/#else/#endif guards and SKIPPED stubs for disabled APIs\n- main() is a flat sequence of r |= example_xxx() calls\n- Verify moved to independent block (not nested inside sign block)\n- example_sign_message requires only sign+verify, not keygen\n- Remove redundant duplicate signature verification\n- Remove verbose printfs around bare memcmp checks\n- Multilevel examples group functions by API guard to reduce\n  #if/#endif repetition\n- basic_deterministic uses test_vector_rnd from the header instead\n  of hardcoded byte arrays\n\nCI (config-variations):\n- Add keygen-sign and keygen-verify test configurations, covering\n  all 6 combinations of 1 or 2 enabled APIs from {keygen, sign,\n  verify}\n\nSigned-off-by: Hanno Becker <beckphan@amazon.co.uk>",
+          "timestamp": "2026-04-16T08:57:40+02:00",
+          "tree_id": "8a352662bd8ee1a7991f3afa18afbe9fc3b3d26e",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/eaa25dd9380e9e2550bbcc343c667234e13fc3c7"
+        },
+        "date": 1776322847311,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 113413,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 357787,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 118248,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 196803,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 588629,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 194933,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 323314,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 755964,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 320855,
             "unit": "cycles"
           }
         ]

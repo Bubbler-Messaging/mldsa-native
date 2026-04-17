@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1776418895670,
+  "lastUpdate": 1776418900922,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -276527,6 +276527,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 109439,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "committer": {
+            "email": "beckphan@amazon.co.uk",
+            "name": "Hanno Becker",
+            "username": "hanno-becker"
+          },
+          "distinct": true,
+          "id": "398f301eed7e0521edae7477cf94be467bf363be",
+          "message": "CBMC: Remove MLD_UNION_OR_STRUCT\n\nPreviously, lack of support for `union`s in CBMC led us to\nintroduce a macro MLD_UNION_OR_STRUCT dispatching between\nstructs and unions. For CBMC proofs, we would use structs,\nbut for RAM-optimized builds, we would use unions.\n\nNow that CBMC v6.9.0 has been released with much improved\nsupport for unions, we can unconditionally use `union`s.\n\nSigned-off-by: Hanno Becker <beckphan@amazon.co.uk>",
+          "timestamp": "2026-04-17T10:36:54+01:00",
+          "tree_id": "4261da1a0c7d5aadf2dc690561d5c2b9fa2ff1e7",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/398f301eed7e0521edae7477cf94be467bf363be"
+        },
+        "date": 1776418805263,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 40975,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 131832,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 44179,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 73147,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 213089,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 72406,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 107850,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 247407,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 109083,
             "unit": "cycles"
           }
         ]

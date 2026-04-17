@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1776462287704,
+  "lastUpdate": 1776462291463,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -278735,6 +278735,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 108708,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "jakemas@amazon.com",
+            "name": "Jake Massimo",
+            "username": "jakemas"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "087bdcdf42b8c155fcbd946c4bf3112cc7d8eeeb",
+          "message": "Update s2n-bignum and HOL Light pins\n\nUpdate s2n-bignum pin from ca6ec31a to b70f1349 (latest main).\nThis adds word_2smulh, word_ishr_round and other instruction\ndefinitions needed by the poly_use_hint proofs.\n\nUpdate HOL Light pin from 6df9b211 to af5d20e0 to include\nword_pmul in Library/words.ml, which is needed for compatibility\nwith the updated s2n-bignum that also defines word_pmul in\ninstruction.ml.\n\nSigned-off-by: Jake Massimo <jakemas@amazon.com>",
+          "timestamp": "2026-04-17T23:40:04+02:00",
+          "tree_id": "e068f58e4b9ac829ad53aa1022c7011de41c64c3",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/087bdcdf42b8c155fcbd946c4bf3112cc7d8eeeb"
+        },
+        "date": 1776462194055,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 42016,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 135784,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 43656,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 71200,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 212474,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 72714,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 107826,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 249186,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 108110,
             "unit": "cycles"
           }
         ]

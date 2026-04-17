@@ -113,7 +113,8 @@ void mld_poly_add(mld_poly *r, const mld_poly *b)
     r->coeffs[i] = r->coeffs[i] + b->coeffs[i];
   }
 }
-#endif /* !MLD_CONFIG_NO_KEYPAIR_API || !MLD_CONFIG_NO_SIGN_API || !MLD_CONFIG_NO_VERIFY_API */
+#endif /* !MLD_CONFIG_NO_KEYPAIR_API || !MLD_CONFIG_NO_SIGN_API || \
+          !MLD_CONFIG_NO_VERIFY_API */
 
 #if !defined(MLD_CONFIG_NO_SIGN_API) || !defined(MLD_CONFIG_NO_VERIFY_API)
 /* Reference: We use destructive version (output=first input) to avoid

@@ -88,12 +88,6 @@ void mld_polyvec_matrix_expand_eager(mld_polymat_eager *mat,
                                      const uint8_t rho[MLDSA_SEEDBYTES])
 {
   unsigned int i, j;
-  /*
-   * We generate four separate seed arrays rather than a single one to work
-   * around limitations in CBMC function contracts dealing with disjoint slices
-   * of the same parent object.
-   */
-
   MLD_ALIGN uint8_t seed_ext[4][MLD_ALIGN_UP(MLDSA_SEEDBYTES + 2)];
 
   for (j = 0; j < 4; j++)
@@ -106,7 +100,7 @@ void mld_polyvec_matrix_expand_eager(mld_polymat_eager *mat,
     mld_memcpy(seed_ext[j], rho, MLDSA_SEEDBYTES);
   }
 
-#if !defined(MLD_CONFIG_SERIAL_FIPS202_ONLY) && !defined(MLD_CONFIG_REDUCE_RAM)
+#if !defined(MLD_CONFIG_SERIAL_FIPS202_ONLY)
   /* Sample 4 matrix entries a time. */
   for (i = 0; i < (MLDSA_K * MLDSA_L / 4) * 4; i += 4)
   __loop__(
@@ -141,9 +135,9 @@ void mld_polyvec_matrix_expand_eager(mld_polymat_eager *mat,
                         &mat->vec[(i + 3) / MLDSA_L].vec[(i + 3) % MLDSA_L],
                         seed_ext);
   }
-#else  /* !MLD_CONFIG_SERIAL_FIPS202_ONLY && !MLD_CONFIG_REDUCE_RAM */
+#else  /* !MLD_CONFIG_SERIAL_FIPS202_ONLY */
   i = 0;
-#endif /* !(!MLD_CONFIG_SERIAL_FIPS202_ONLY && !MLD_CONFIG_REDUCE_RAM) */
+#endif /* MLD_CONFIG_SERIAL_FIPS202_ONLY */
 
   /* Entries omitted by the batch-sampling are sampled individually. */
   while (i < MLDSA_K * MLDSA_L)
@@ -193,8 +187,7 @@ void mld_polyvec_matrix_pointwise_montgomery_eager(mld_polyveck *t,
     decreases(MLDSA_K - i)
   )
   {
-    const mld_polyvecl *row = mld_polymat_get_row_eager(mat, i);
-    mld_polyvecl_pointwise_acc_montgomery(&t->vec[i], row, v);
+    mld_polyvecl_pointwise_acc_montgomery(&t->vec[i], &mat->vec[i], v);
   }
 
   mld_assert_abs_bound_2d(t->vec, MLDSA_K, MLDSA_N, MLDSA_Q);
@@ -217,19 +210,34 @@ void mld_polyvec_matrix_pointwise_montgomery_lazy(mld_polyveck *t,
                                                   const mld_polyvecl *v)
 {
   unsigned int i, l;
+  MLD_ALIGN uint8_t seed_ext[MLD_ALIGN_UP(MLDSA_SEEDBYTES + 2)];
+  mld_memcpy(seed_ext, mat->rho, MLDSA_SEEDBYTES);
 
   for (i = 0; i < MLDSA_K; ++i)
   {
-    const mld_poly *a_kl = mld_polymat_get_poly_lazy(mat, i, 0);
-    mld_poly_pointwise_montgomery(&t->vec[i], a_kl, &v->vec[0]);
+    seed_ext[MLDSA_SEEDBYTES + 0] = 0;
+    seed_ext[MLDSA_SEEDBYTES + 1] = (uint8_t)i;
+    mld_poly_uniform(&mat->cur, seed_ext);
+    mld_poly_permute_bitrev_to_custom_optional(&mat->cur);
+    mld_poly_pointwise_montgomery(&t->vec[i], &mat->cur, &v->vec[0]);
+
     for (l = 1; l < MLDSA_L; ++l)
     {
-      a_kl = mld_polymat_get_poly_lazy(mat, i, l);
-      mld_poly_pointwise_montgomery(&mat->tmp, a_kl, &v->vec[l]);
+      seed_ext[MLDSA_SEEDBYTES + 0] = (uint8_t)l;
+      seed_ext[MLDSA_SEEDBYTES + 1] = (uint8_t)i;
+      mld_poly_uniform(&mat->cur, seed_ext);
+      mld_poly_permute_bitrev_to_custom_optional(&mat->cur);
+      /* TODO: if mld_poly_pointwise_montgomery's CBMC and HOL Light specs
+       * are strengthened to permit aliasing, the product can be written
+       * in place into mat->cur and the separate mat->tmp field dropped. */
+      mld_poly_pointwise_montgomery(&mat->tmp, &mat->cur, &v->vec[l]);
       mld_poly_add(&t->vec[i], &mat->tmp);
     }
     mld_poly_reduce(&t->vec[i]);
   }
+
+  /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
+  mld_zeroize(seed_ext, sizeof(seed_ext));
 }
 
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */

@@ -92,7 +92,6 @@ source code and documentation.
   - [mldsa/src/poly.c](mldsa/src/poly.c)
   - [mldsa/src/poly_kl.c](mldsa/src/poly_kl.c)
   - [mldsa/src/polyvec_lazy.c](mldsa/src/polyvec_lazy.c)
-  - [mldsa/src/polyvec_lazy.h](mldsa/src/polyvec_lazy.h)
   - [mldsa/src/rounding.h](mldsa/src/rounding.h)
   - [mldsa/src/sign.c](mldsa/src/sign.c)
   - [mldsa/src/sign.h](mldsa/src/sign.h)

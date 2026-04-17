@@ -59,8 +59,8 @@
 #define mld_polymat MLD_ADD_PARAM_SET(mld_polymat)
 #define mld_polymat_eager MLD_ADD_PARAM_SET(mld_polymat_eager)
 #define mld_polymat_lazy MLD_ADD_PARAM_SET(mld_polymat_lazy)
-#define mld_polymat_get_row_eager MLD_ADD_PARAM_SET(mld_polymat_get_row_eager)
-#define mld_polymat_get_poly_lazy MLD_ADD_PARAM_SET(mld_polymat_get_poly_lazy)
+#define mld_poly_permute_bitrev_to_custom_optional \
+  MLD_ADD_PARAM_SET(mld_poly_permute_bitrev_to_custom_optional)
 #define mld_polyvec_matrix_expand_eager \
   MLD_NAMESPACE_KL(polyvec_matrix_expand_eager)
 #define mld_polyvec_matrix_expand_lazy \
@@ -69,8 +69,6 @@
   MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_eager)
 #define mld_polyvec_matrix_pointwise_montgomery_lazy \
   MLD_NAMESPACE_KL(polyvec_matrix_pointwise_montgomery_lazy)
-#define mld_poly_permute_bitrev_to_custom_optional \
-  MLD_ADD_PARAM_SET(mld_poly_permute_bitrev_to_custom_optional)
 /* End of parameter set namespacing */
 
 /* Eager: precompute and store full NTT'd vector */
@@ -224,30 +222,23 @@ static MLD_INLINE void mld_sk_t0hat_get_poly_lazy(mld_poly *buf,
 
 /* polymat */
 
-/* Eager: precompute and store full matrix */
+#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
+/* Eager: precompute and store full matrix. */
 typedef struct
 {
   mld_polyvecl vec[MLDSA_K];
 } mld_polymat_eager;
+#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 /* Lazy: store seed, sample elements on demand.
- * poly_buffer holds the on-demand sampled matrix element A[k][l].
- * tmp is needed as scratch space for pointwise multiplication. */
+ * cur holds the on-demand sampled matrix element A[k][l].
+ * tmp is scratch space for the per-element pointwise product. */
 typedef struct
 {
-  mld_poly poly_buffer;
+  mld_poly cur;
   mld_poly tmp;
   uint8_t rho[MLDSA_SEEDBYTES];
 } mld_polymat_lazy;
-
-#if !defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
-MLD_MUST_CHECK_RETURN_VALUE
-static MLD_INLINE const mld_polyvecl *mld_polymat_get_row_eager(
-    mld_polymat_eager *mat, unsigned int row)
-{
-  return &mat->vec[row];
-}
-#endif /* !MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
 #if defined(MLD_CONFIG_REDUCE_RAM) || defined(MLD_UNIT_TEST)
 static MLD_INLINE void mld_poly_permute_bitrev_to_custom_optional(mld_poly *p)
@@ -257,21 +248,6 @@ static MLD_INLINE void mld_poly_permute_bitrev_to_custom_optional(mld_poly *p)
 #else
   (void)p;
 #endif
-}
-
-MLD_MUST_CHECK_RETURN_VALUE
-static MLD_INLINE const mld_poly *mld_polymat_get_poly_lazy(
-    mld_polymat_lazy *mat, unsigned int k, unsigned int l)
-{
-  MLD_ALIGN uint8_t seed_ext[MLD_ALIGN_UP(MLDSA_SEEDBYTES + 2)];
-  mld_memcpy(seed_ext, mat->rho, MLDSA_SEEDBYTES);
-  seed_ext[MLDSA_SEEDBYTES + 0] = (uint8_t)l;
-  seed_ext[MLDSA_SEEDBYTES + 1] = (uint8_t)k;
-  mld_poly_uniform(&mat->poly_buffer, seed_ext);
-  mld_poly_permute_bitrev_to_custom_optional(&mat->poly_buffer);
-  /* @[FIPS204, Section 3.6.3] Destruction of intermediate values. */
-  mld_zeroize(seed_ext, sizeof(seed_ext));
-  return &mat->poly_buffer;
 }
 #endif /* MLD_CONFIG_REDUCE_RAM || MLD_UNIT_TEST */
 
@@ -380,5 +356,6 @@ typedef mld_polymat_eager mld_polymat;
   mld_polyvec_matrix_pointwise_montgomery_eager
 #endif /* !MLD_CONFIG_REDUCE_RAM */
 
-#endif /* !MLD_CONFIG_NO_KEYPAIR_API || !MLD_CONFIG_NO_SIGN_API */
+#endif /* !MLD_CONFIG_NO_KEYPAIR_API || !MLD_CONFIG_NO_SIGN_API || \
+          !MLD_CONFIG_NO_VERIFY_API */
 #endif /* !MLD_POLYVEC_LAZY_H */

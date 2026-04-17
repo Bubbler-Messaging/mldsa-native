@@ -346,8 +346,6 @@
 #undef mld_poly_permute_bitrev_to_custom_optional
 #undef mld_polymat
 #undef mld_polymat_eager
-#undef mld_polymat_get_poly_lazy
-#undef mld_polymat_get_row_eager
 #undef mld_polymat_lazy
 #undef mld_polyvec_matrix_expand
 #undef mld_polyvec_matrix_expand_eager

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1776436338789,
+  "lastUpdate": 1776436352040,
   "repoUrl": "https://github.com/pq-code-package/mldsa-native",
   "entries": {
     "Arm Cortex-A72 (Raspberry Pi 4) benchmarks (opt)": [
@@ -555058,6 +555058,75 @@ window.BENCHMARK_DATA = {
           {
             "name": "ML-DSA-87 verify",
             "value": 319759,
+            "unit": "cycles"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "matthias@zerorisc.com",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "committer": {
+            "email": "matthias@kannwischer.eu",
+            "name": "Matthias J. Kannwischer",
+            "username": "mkannwischer"
+          },
+          "distinct": true,
+          "id": "b21396d04e79f8314b0ac415e93baa2933bcce86",
+          "message": "Lowram: Share buffers with non-overlapping lifetimes in keygen\n\nReuse t0 as the accumulator in mld_compute_t0_t1_tr_from_sk_components,\nand have the caller provide s1 already in NTT form, removing two\nallocations (s1hat and t) from the helper.\n\nIn mld_sign_keypair_internal, share the s1 and t1 buffers via a union\nsince s1hat is consumed before t1 is produced. Pack s1 into the secret\nkey before the in-place NTT so the original coefficients are preserved.\n\nSplit mld_pack_sk into mld_pack_sk_s1 and mld_pack_sk_rho_key_tr_s2_t0\nto support packing s1 independently before the NTT.\n\nAliasing s1 and t1 makes mld_compute_t0_t1_tr_from_sk_components's\nmemory_no_alias contract on both arguments incompatible with the keygen\ncall site. As a workaround, drop the contract and inline it into the\nproofs of both call sites.\nThis will go away in a follow-up PR that eliminates\nmld_compute_t0_t1_tr_from_sk_components altogether\n(https://github.com/pq-code-package/mldsa-native/pull/1030).\n\nSigned-off-by: Matthias J. Kannwischer <matthias@zerorisc.com>",
+          "timestamp": "2026-04-17T16:28:04+02:00",
+          "tree_id": "255dbe63a7e61324e0518b6c00c3745c0b6b773f",
+          "url": "https://github.com/pq-code-package/mldsa-native/commit/b21396d04e79f8314b0ac415e93baa2933bcce86"
+        },
+        "date": 1776436137841,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "ML-DSA-44 keypair",
+            "value": 112292,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 sign",
+            "value": 356010,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-44 verify",
+            "value": 117675,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 keypair",
+            "value": 195020,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 sign",
+            "value": 587212,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-65 verify",
+            "value": 194172,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 keypair",
+            "value": 320624,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 sign",
+            "value": 752816,
+            "unit": "cycles"
+          },
+          {
+            "name": "ML-DSA-87 verify",
+            "value": 319377,
             "unit": "cycles"
           }
         ]

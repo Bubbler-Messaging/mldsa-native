@@ -1,0 +1,11 @@
+[package]
+name = "mldsa-native"
+version = "0.1.0-bubbler"
+edition = "2021"
+license = "Apache-2.0 OR ISC OR MIT"
+description = "Bubbler Rust wrapper around mldsa-native (ML-DSA-87, FIPS 204)"
+links = "bubbler_mldsa87"
+build = "build.rs"
+
+[build-dependencies]
+cc = "1"

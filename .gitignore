@@ -4,3 +4,7 @@ test/build
 .direnv
 # Downloaded ACVP test data
 test/acvp/.acvp-data/
+
+# Bubbler Rust wrapper
+/target
+/Cargo.lock
